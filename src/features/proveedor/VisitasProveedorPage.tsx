@@ -15,6 +15,7 @@ interface Visita {
   profesional: string;
   entidad: string | null;
   estado: EstadoVisita;
+  nota: string | null;
   paciente: { nombre: string; cedula: string; diagnostico: string };
   evidencia: { id: number; estado: string; timestamp: string | null } | null;
 }
@@ -124,6 +125,11 @@ function VisitaCard({ visita: v, router }: { visita: Visita; router: ReturnType<
         {v.evidencia && (
           <p className={`text-[11px] font-semibold mt-1 ${evEst.color}`}>
             Evidencia: {evEst.label}
+          </p>
+        )}
+        {v.estado === "no_cumplido" && v.nota && (
+          <p className="text-[11px] mt-1.5 bg-rose-50 text-rose-700 rounded-lg px-2 py-1 border border-rose-100">
+            <span className="font-bold">Motivo: </span>{v.nota}
           </p>
         )}
       </div>

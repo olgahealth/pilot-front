@@ -48,6 +48,7 @@ export default function AutorizacionesPage() {
   const [approved, setApproved] = useState<Set<number>>(new Set());
   const [search, setSearch] = useState("");
   const [filterUrgencia, setFilterUrgencia] = useState<"todos" | "urgente" | "programado">("todos");
+  const [filterEstado, setFilterEstado] = useState<EstadoSolicitud | "todos">("todos");
   const [filterTipo, setFilterTipo] = useState("Todos");
   const [masInfoSolicitud, setMasInfoSolicitud] = useState<Solicitud | null>(null);
 
@@ -72,8 +73,9 @@ export default function AutorizacionesPage() {
         s.diagnostico.toLowerCase().includes(search.toLowerCase()) ||
         s.medico_solicitante.toLowerCase().includes(search.toLowerCase());
       const matchUrgencia = filterUrgencia === "todos" || s.urgencia === filterUrgencia;
-      const matchTipo = filterTipo === "Todos" || s.tipo_servicio === filterTipo;
-      return matchSearch && matchUrgencia && matchTipo;
+      const matchTipo     = filterTipo === "Todos" || s.tipo_servicio === filterTipo;
+      const matchEstado   = filterEstado === "todos" || (estados[s.id] ?? s.estado) === filterEstado;
+      return matchSearch && matchUrgencia && matchTipo && matchEstado;
     });
   }, [solicitudes, search, filterUrgencia, filterTipo]);
 
@@ -142,44 +144,74 @@ export default function AutorizacionesPage() {
       </div>
 
       {/* Filtros */}
-      <div data-tour="filtros" className="bg-white rounded-2xl border border-gray-200 p-4 flex flex-wrap gap-3 items-center">
-        <div className="relative flex-1 min-w-48">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Buscar paciente, diagnóstico, médico..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-gray-400" />
-          <div className="flex gap-1">
-            {(["todos", "urgente", "programado"] as const).map((u) => (
-              <button
-                key={u}
-                onClick={() => setFilterUrgencia(u)}
-                className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-colors ${
-                  filterUrgencia === u
-                    ? "bg-emerald-600 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                {u === "todos" ? "Todos" : u === "urgente" ? "Urgentes" : "Programados"}
-              </button>
-            ))}
+      <div data-tour="filtros" className="bg-white rounded-2xl border border-gray-200 p-4 space-y-3">
+        {/* Fila 1: búsqueda + urgencia + tipo */}
+        <div className="flex flex-wrap gap-3 items-center">
+          <div className="relative flex-1 min-w-48">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Buscar paciente, diagnóstico, médico..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-gray-400" />
+            <div className="flex gap-1">
+              {(["todos", "urgente", "programado"] as const).map((u) => (
+                <button
+                  key={u}
+                  onClick={() => setFilterUrgencia(u)}
+                  className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-colors ${
+                    filterUrgencia === u
+                      ? "bg-emerald-600 text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {u === "todos" ? "Todos" : u === "urgente" ? "Urgentes" : "Programados"}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="relative">
+            <select
+              value={filterTipo}
+              onChange={(e) => setFilterTipo(e.target.value)}
+              className="text-sm border border-gray-200 rounded-xl px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 appearance-none bg-white"
+            >
+              {TIPOS_SERVICIO.map((t) => <option key={t}>{t}</option>)}
+            </select>
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
         </div>
-        <div className="relative">
-          <select
-            value={filterTipo}
-            onChange={(e) => setFilterTipo(e.target.value)}
-            className="text-sm border border-gray-200 rounded-xl px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 appearance-none bg-white"
-          >
-            {TIPOS_SERVICIO.map((t) => <option key={t}>{t}</option>)}
-          </select>
-          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        {/* Fila 2: filtro por estado */}
+        <div className="flex items-center gap-2 flex-wrap pt-1 border-t border-gray-100">
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Estado:</span>
+          {([
+            { value: "todos",              label: "Todas" },
+            { value: "pendiente",          label: "Pendiente" },
+            { value: "aprobado",           label: "Aprobadas" },
+            { value: "aprobado_condiciones",label: "Con condiciones" },
+            { value: "negado",             label: "Negadas" },
+          ] as const).map(({ value, label }) => (
+            <button
+              key={value}
+              onClick={() => setFilterEstado(value)}
+              className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-colors ${
+                filterEstado === value
+                  ? value === "pendiente"           ? "bg-gray-700 text-white"
+                  : value === "aprobado"            ? "bg-emerald-600 text-white"
+                  : value === "aprobado_condiciones"? "bg-amber-500 text-white"
+                  : value === "negado"              ? "bg-red-600 text-white"
+                  : "bg-gray-700 text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -194,7 +226,7 @@ export default function AutorizacionesPage() {
                 <th className="text-left px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Complejidad</th>
                 <th className="text-left px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Plan propuesto</th>
                 <th className="text-left px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Médico · Hospital</th>
-                <th className="text-left px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Costo est.</th>
+                <th className="text-left px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider" title="Valor facturable al asegurador por mes de servicio">Valor facturable</th>
                 <th className="text-left px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Estado / Acción</th>
               </tr>
             </thead>
@@ -364,7 +396,7 @@ export default function AutorizacionesPage() {
                   <div className="bg-gray-50 rounded-xl p-4 mb-5 space-y-1.5">
                     <p className="text-sm font-semibold text-gray-900">{sol.paciente}</p>
                     <p className="text-xs text-gray-500"><span className="font-semibold text-gray-700">{sol.plan_nombre}</span> · {sol.plan_propuesto}</p>
-                    <p className="text-sm font-bold text-emerald-700">{formatCOP(sol.costo_estimado)} / mes</p>
+                    <p className="text-sm font-bold text-emerald-700">{formatCOP(sol.costo_estimado)} / mes <span className="text-xs font-normal text-gray-400">(valor facturable)</span></p>
                   </div>
                 ) : null;
               })()}
