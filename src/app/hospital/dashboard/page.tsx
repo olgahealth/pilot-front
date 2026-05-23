@@ -1,7 +1,12 @@
 import HospitalDashboard from "@/features/hospital/HospitalDashboard";
+import PagadorLayout from "@/layouts/PagadorLayout";
 
-export const metadata = { title: "Hospital — Panel de Operaciones" };
+export const metadata = { title: "Panel Hospital — OLGA" };
 
-export default function HospitalDashboardPage() {
-  return <HospitalDashboard />;
+export default function Page() {
+  return (
+    <PagadorLayout>
+      <HospitalDashboard />
+    </PagadorLayout>
+  );
 }

@@ -15,22 +15,67 @@ import {
   ChevronRight,
   Menu,
   X,
+  UserCog,
+  Calendar,
 } from "lucide-react";
 import DoctorGuide from "@/components/DoctorGuide";
 import DemoTour from "@/components/DemoTour";
 import PageTransition from "@/components/PageTransition";
+import { useAuth } from "@/features/auth/AuthContext";
 
-const NAV_ITEMS = [
-  { href: "/dashboard",      label: "Dashboard",                icon: LayoutDashboard, id: "dashboard"      },
-  { href: "/autorizaciones", label: "Solicitudes de autorización", icon: FileCheck,    id: "autorizaciones" },
-  { href: "/pacientes",      label: "Pacientes",                icon: Users,           id: "pacientes"      },
-  { href: "/evidencia/1",    label: "Evidencia de servicio",    icon: MapPin,          id: "evidencia"      },
-  { href: "/auditoria",      label: "Auditoría y reportes",     icon: ClipboardList,   id: "auditoria"      },
+const EPS_NAV = [
+  { href: "/dashboard",      label: "Dashboard",                   icon: LayoutDashboard, id: "dashboard"      },
+  { href: "/autorizaciones", label: "Solicitudes de autorización", icon: FileCheck,       id: "autorizaciones" },
+  { href: "/pacientes",      label: "Pacientes",                   icon: Users,           id: "pacientes"      },
+  { href: "/evidencia/1",    label: "Evidencia de servicio",       icon: MapPin,          id: "evidencia"      },
+  { href: "/auditoria",      label: "Auditoría y reportes",        icon: ClipboardList,   id: "auditoria"      },
 ];
+
+const ADMIN_NAV = [
+  { href: "/admin/dashboard", label: "Sala de control",  icon: LayoutDashboard, id: "admin-dashboard" },
+  { href: "/admin/usuarios",  label: "Profesionales",    icon: UserCog,         id: "admin-usuarios"  },
+  { href: "/autorizaciones",  label: "Solicitudes",      icon: FileCheck,       id: "autorizaciones"  },
+  { href: "/pacientes",       label: "Pacientes",        icon: Users,           id: "pacientes"       },
+  { href: "/auditoria",       label: "Auditoría",        icon: ClipboardList,   id: "auditoria"       },
+];
+
+const HOSPITAL_NAV = [
+  { href: "/hospital/dashboard", label: "Panel Hospital",           icon: LayoutDashboard, id: "hospital-dashboard" },
+  { href: "/autorizaciones",     label: "Mis solicitudes",          icon: FileCheck,       id: "autorizaciones"     },
+  { href: "/pacientes",          label: "Pacientes en seguimiento", icon: Users,           id: "pacientes"          },
+  { href: "/auditoria",          label: "Reportes",                 icon: ClipboardList,   id: "auditoria"          },
+];
+
+const PROVEEDOR_NAV = [
+  { href: "/proveedor/visitas", label: "Mis visitas",     icon: Calendar, id: "proveedor-visitas" },
+  { href: "/evidencia/1",       label: "Subir evidencia", icon: MapPin,   id: "evidencia"         },
+];
+
+const ROLE_LABEL: Record<string, string> = {
+  admin_olga: "Admin OLGA",
+  eps:        "EPS Sura",
+  hospital:   "Hospital",
+  proveedor:  "Proveedor",
+  paciente:   "Paciente",
+};
+
+const ROLE_SUBLABEL: Record<string, string> = {
+  admin_olga: "Administrador del sistema",
+  eps:        "Auditora médica",
+  hospital:   "Gestión hospitalaria",
+  proveedor:  "Profesional de salud",
+  paciente:   "Usuario paciente",
+};
 
 export default function PagadorLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user } = useAuth();
+
+  const isAdmin      = user?.role === "admin_olga";
+  const isHospital   = user?.role === "hospital";
+  const isProveedor  = user?.role === "proveedor";
+  const NAV_ITEMS    = isAdmin ? ADMIN_NAV : isHospital ? HOSPITAL_NAV : isProveedor ? PROVEEDOR_NAV : EPS_NAV;
 
   // Cerrar sidebar al cambiar de ruta en móvil
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
@@ -77,11 +122,18 @@ export default function PagadorLayout({ children }: { children: React.ReactNode 
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-emerald-500" />
-          <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full leading-none">
-            EPS Sura
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full leading-none border ${
+            isAdmin     ? "text-slate-700 bg-slate-100 border-slate-200" :
+            isHospital  ? "text-blue-700 bg-blue-50 border-blue-200" :
+            isProveedor ? "text-amber-700 bg-amber-50 border-amber-200" :
+                          "text-emerald-700 bg-emerald-50 border-emerald-200"
+          }`}>
+            {user?.role ? ROLE_LABEL[user.role] ?? user.role : "OLGA"}
           </span>
         </div>
-        <p className="text-[10px] text-gray-400 mt-1">Plan Salud Complementario</p>
+        <p className="text-[10px] text-gray-400 mt-1">
+          {isAdmin ? "Panel de administración" : isHospital ? "Panel del Hospital" : isProveedor ? "Portal del Profesional" : "Plan Salud Complementario"}
+        </p>
       </div>
 
       {/* Nav */}
@@ -112,12 +164,14 @@ export default function PagadorLayout({ children }: { children: React.ReactNode 
       {/* Footer */}
       <div className="px-5 py-4 border-t border-gray-100">
         <div className="flex items-center gap-2.5 mb-3">
-          <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
-            AS
+          <div className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-xs font-bold flex-shrink-0 ${isAdmin ? "bg-slate-700" : isHospital ? "bg-blue-600" : isProveedor ? "bg-amber-600" : "bg-emerald-600"}`}>
+            {user?.name ? user.name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase() : "AS"}
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-gray-900 truncate">Ana Sofía Vargas</p>
-            <p className="text-[10px] text-gray-400 truncate">Auditora médica</p>
+            <p className="text-xs font-semibold text-gray-900 truncate">{user?.name ?? "Usuario OLGA"}</p>
+            <p className="text-[10px] text-gray-400 truncate">
+              {user?.role ? ROLE_SUBLABEL[user.role] ?? user.role : ""}
+            </p>
           </div>
         </div>
         <Link

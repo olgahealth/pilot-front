@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const res = await fetch(`${API}/api/v1/me`, {
+      const res = await fetch(`${API}/api/v1/auth/me`, {
         headers: {
           Accept: "application/json",
           Authorization: `Bearer ${token}`,
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoggingOut(true);
       const token = localStorage.getItem("auth_token");
 
-      await fetch(`${API}/api/v1/logout`, {
+      await fetch(`${API}/api/v1/auth/logout`, {
         method: "POST",
         headers: {
           Accept: "application/json",

@@ -16,7 +16,7 @@ export interface AuthUser {
 }
 
 export async function login(email: string, password: string): Promise<{ token: string; user: AuthUser }> {
-  const res = await fetch(`${API_URL}/v1/login`, {
+  const res = await fetch(`${API_URL}/api/v1/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -38,7 +38,7 @@ export async function login(email: string, password: string): Promise<{ token: s
 export function logout(): void {
   const token = getToken();
   if (token) {
-    fetch(`${API_URL}/v1/logout`, {
+    fetch(`${API_URL}/api/v1/auth/logout`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -96,7 +96,7 @@ export default function DashboardCompacto() {
     ])
       .then(([k, a, s]) => {
         setKpis(k);
-        setAlertas(a);
+        setAlertas(Array.isArray(a) ? a : (a?.data ?? []));
         setTopSolicitudes((s.data ?? []).slice(0, 4));
       })
       .catch(() => {})
