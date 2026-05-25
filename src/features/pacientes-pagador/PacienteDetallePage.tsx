@@ -156,8 +156,23 @@ export default function PacienteDetallePage({ id }: { id: number }) {
           <p className="text-sm text-gray-600 mt-1 font-medium">
             {data.diagnostico} · Día {data.dias_post_alta} · {data.eps}
           </p>
+          {(() => {
+            const CIE10: Record<string, string> = { icc: "I50.0", epoc: "J44.1", diabetes: "E11.9", acv: "I63.9", irc: "N18.5", cáncer: "C80.1", cancer: "C80.1", hipertens: "I10", fractura: "S72.0", cirrosis: "K74.6" };
+            const key = Object.keys(CIE10).find(k => data.diagnostico.toLowerCase().includes(k));
+            return key ? <span className="inline-block mt-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-mono">CIE-10: {CIE10[key]}</span> : null;
+          })()}
         </div>
       </div>
+
+      {/* Alerta polifarmacia */}
+      {data.riesgo === "alto" && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center gap-2">
+          <AlertTriangle className="text-amber-600 h-4 w-4 shrink-0" />
+          <span className="text-sm text-amber-800">
+            <strong>Alerta polifarmacia:</strong> Revisar interacciones medicamentosas. Paciente con múltiples comorbilidades activas.
+          </span>
+        </div>
+      )}
 
       {/* Alerta riesgo alto */}
       {data.riesgo === "alto" && (

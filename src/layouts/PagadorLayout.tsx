@@ -17,6 +17,7 @@ import {
   X,
   UserCog,
   Calendar,
+  Inbox,
 } from "lucide-react";
 import DoctorGuide from "@/components/DoctorGuide";
 import DemoTour from "@/components/DemoTour";
@@ -47,8 +48,9 @@ const HOSPITAL_NAV = [
 ];
 
 const PROVEEDOR_NAV = [
-  { href: "/proveedor/visitas", label: "Mis visitas",     icon: Calendar, id: "proveedor-visitas" },
-  { href: "/evidencia/1",       label: "Subir evidencia", icon: MapPin,   id: "evidencia"         },
+  { href: "/proveedor/operaciones", label: "Centro de Operaciones", icon: LayoutDashboard, id: "proveedor-ops"    },
+  { href: "/proveedor/visitas",     label: "Mis visitas",           icon: Calendar,        id: "proveedor-visitas"},
+  { href: "/proveedor/ordenes",     label: "Bandeja de órdenes",    icon: Inbox,           id: "proveedor-ordenes"},
 ];
 
 const ROLE_LABEL: Record<string, string> = {

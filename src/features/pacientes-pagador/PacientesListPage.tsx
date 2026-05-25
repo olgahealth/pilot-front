@@ -83,12 +83,32 @@ function TendenciaBadge({ t }: { t: Tendencia }) {
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
+const PAQUETES = ["Todos", "PHD", "PAD", "PARD", "Paliativo", "Alto Costo"] as const;
+type Paquete = typeof PAQUETES[number];
+
+const PAQUETE_STYLES: Record<string, { bg: string; text: string }> = {
+  PHD:          { bg: "bg-violet-100", text: "text-violet-700" },
+  PAD:          { bg: "bg-blue-100",   text: "text-blue-700"   },
+  PARD:         { bg: "bg-indigo-100", text: "text-indigo-700" },
+  Paliativo:    { bg: "bg-rose-100",   text: "text-rose-700"   },
+  "Alto Costo": { bg: "bg-amber-100",  text: "text-amber-700"  },
+};
+
+function getPaquete(p: PacientePagador): string {
+  if (/cáncer|cancer|oncol|palia|terminal/i.test(p.diagnostico)) return "Paliativo";
+  if (p.dias_post_alta > 180) return "Alto Costo";
+  if (p.riesgo === "alto" && p.dias_post_alta < 30) return "PHD";
+  if (p.riesgo === "alto") return "PAD";
+  return "PARD";
+}
+
 export default function PacientesListPage() {
   const router = useRouter();
   const [pacientes, setPacientes] = useState<PacientePagador[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [search, setSearch] = useState("");
   const [filterRiesgo, setFilterRiesgo] = useState<"todos" | Riesgo>("todos");
+  const [filterPaquete, setFilterPaquete] = useState<Paquete>("Todos");
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
@@ -108,9 +128,10 @@ export default function PacientesListPage() {
         p.cedula.includes(search) ||
         p.diagnostico.toLowerCase().includes(search.toLowerCase());
       const matchRiesgo = filterRiesgo === "todos" || p.riesgo === filterRiesgo;
-      return matchSearch && matchRiesgo;
+      const matchPaquete = filterPaquete === "Todos" || getPaquete(p) === filterPaquete;
+      return matchSearch && matchRiesgo && matchPaquete;
     });
-  }, [pacientes, search, filterRiesgo]);
+  }, [pacientes, search, filterRiesgo, filterPaquete]);
 
   const { paginatedItems, currentPage, totalPages, goToNext, goToPrev, isFirstPage, isLastPage } =
     usePagination(filtered, 10);
@@ -158,6 +179,20 @@ export default function PacientesListPage() {
         </div>
       </header>
 
+      {/* Filtro por paquete */}
+      <div className="flex flex-wrap gap-2">
+        {PAQUETES.map((p) => (
+          <button key={p} onClick={() => setFilterPaquete(p)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border ${
+              filterPaquete === p
+                ? p === "Todos" ? "bg-gray-800 text-white border-gray-800" : `${PAQUETE_STYLES[p]?.bg} ${PAQUETE_STYLES[p]?.text} border-current/20`
+                : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
+            }`}>
+            {p}
+          </button>
+        ))}
+      </div>
+
       {/* Barra de Búsqueda y Filtros */}
       <div className="bg-white rounded-xl ring-1 ring-slate-200 p-4 flex flex-wrap gap-4 items-center shadow-sm">
         <div className="relative flex-1 min-w-[300px]">
@@ -202,6 +237,7 @@ export default function PacientesListPage() {
                 <th className="text-left px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">#</th>
                 <th className="text-left px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Paciente</th>
                 <th className="text-left px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Diagnóstico Clínico</th>
+                <th className="text-left px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Paquete</th>
                 <th className="text-left px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Seguimiento</th>
                 <th className="text-left px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Riesgo Bio</th>
                 <th className="text-left px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Adherencia</th>
@@ -228,6 +264,11 @@ export default function PacientesListPage() {
                       <p className="text-[11px] font-medium text-slate-600 leading-relaxed max-w-[200px] italic">
                         {p.diagnostico}
                       </p>
+                    </td>
+                    <td className="px-4 py-4">
+                      {(() => { const pq = getPaquete(p); const s = PAQUETE_STYLES[pq]; return (
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s?.bg} ${s?.text}`}>{pq}</span>
+                      ); })()}
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-2">

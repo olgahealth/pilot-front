@@ -143,6 +143,7 @@ const CUPS_MEDICOS = [
 const EXPORTES = [
   { id: "supersalud", label: "Indicadores Supersalud",   icon: Building2    },
   { id: "adres",      label: "Reporte ADRES",            icon: Download     },
+  { id: "json",       label: "Exportar JSON",            icon: Download     },
 ];
 
 // ─── Tooltip helper (portal — escapa overflow-hidden) ────────────────────────
@@ -302,6 +303,12 @@ export default function AuditoriaPage() {
 
   function handleExport(id: string) {
     if (exportando) return;
+    if (id === "json") {
+      const blob = new Blob([JSON.stringify({ prestadores: PRESTADORES, fecha: new Date().toISOString() }, null, 2)], { type: "application/json" });
+      const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: `auditoria-${new Date().toISOString().slice(0, 10)}.json` });
+      a.click();
+      return;
+    }
     setExportando(id);
     setTimeout(() => setExportando(null), 2000);
   }
