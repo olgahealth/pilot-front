@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Íconos inline — cada uno con paths verificados
+// Íconos inline — cada uno con paths verificados (Sin cambios)
 const PHASE_2_ICONS: Record<string, React.ReactNode> = {
   'i-activity': (
     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
@@ -78,89 +78,129 @@ const PhaseTwo = () => {
   ];
 
   return (
-    <section className="py-32 px-6 max-w-7xl mx-auto overflow-hidden" id="fase2">
-      <div className="flex flex-col items-center text-center mb-20">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#0FB888]/5 border border-[#0FB888]/10 text-[#0FB888] text-[0.65rem] font-black uppercase tracking-[3px] mb-8">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0FB888] opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0FB888]" />
-          </span>
-          Fase 2 — Escalamiento
-        </div>
+    <section className="py-24 md:py-32 px-6 bg-[#F8FAFC] relative overflow-hidden" id="fase2">
+      <div className="max-w-7xl mx-auto relative z-10">
+        
+        {/* CABECERA */}
+        <div className="flex flex-col items-center text-center mb-20">
+          
+          {/* Badge Píldora animada */}
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#0FB888]/10 border border-[#0FB888]/20 text-[#0FB888] text-[11px] font-bold uppercase tracking-[0.15em] mb-8 shadow-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0FB888] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0FB888]" />
+            </span>
+            Fase 2 — Escalamiento
+          </div>
 
-        <h2 className="font-['Instrument_Serif',serif] text-[clamp(2.5rem,6vw,5rem)] text-[#0A1F1A] mb-8 font-normal leading-[1.05]">
-          De verificación a <br />
-          <em className="text-[#0FB888] italic px-2">Hospital en Casa</em>
-        </h2>
-
-        <p className="max-w-2xl text-[#4A6B62] text-xl font-light leading-relaxed">
-          Una vez conectado el ecosistema, OLGA escala el modelo para habilitar
-          atención hospitalaria de alta complejidad fuera de la institución.
-        </p>
-      </div>
-
-      {/* Cards */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
-        {cards.map((card, index) => (
-          <div
-            key={index}
-            className="group relative p-10 rounded-[2.5rem] bg-white border border-[#0A1F1A]/5 hover:border-[#0FB888]/30 transition-all duration-500 hover:shadow-[0_30px_60px_-15px_rgba(15,184,136,0.12)] flex flex-col items-start"
+          <h2 
+            className="text-4xl md:text-5xl lg:text-[64px] text-[#0A1F1A] mb-8 font-extrabold leading-[1.05] tracking-tighter"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            {/* Dot decorativo */}
-            <div className={`absolute top-8 right-8 w-1.5 h-1.5 rounded-full ${card.accent} opacity-20 group-hover:opacity-100 transition-opacity`} />
+            De verificación a <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0FB888] to-[#2BB38E]">
+              Hospital en Casa
+            </span>
+          </h2>
 
-            <div className="w-14 h-14 rounded-2xl bg-[#F0FBF6] text-[#0FB888] flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-[#0FB888] group-hover:text-white transition-all duration-500 shadow-sm">
-              <Ico id={card.id} className="w-7 h-7" />
-            </div>
-
-            <h4 className="text-[#0A1F1A] text-2xl font-bold mb-4 tracking-tight leading-tight">
-              {card.title}
-            </h4>
-
-            <p className="text-[#4A6B62] text-[0.95rem] leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
-              {card.desc}
-            </p>
-
-            <div className="mt-8 w-0 group-hover:w-full h-[2px] bg-gradient-to-r from-[#0FB888]/40 to-transparent transition-all duration-700" />
-          </div>
-        ))}
-
-        {/* Card CTA */}
-        <div className="hidden lg:flex p-10 rounded-[2.5rem] bg-gradient-to-br from-[#0A1F1A] to-[#1a2e29] items-center justify-center text-center relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#0FB888] via-transparent to-transparent" />
-          </div>
-          <div className="relative z-10">
-            <div className="text-white font-bold text-xl">El futuro ya es real.</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Banner de autoridad */}
-      <div className="bg-[#0A1F1A] rounded-[3rem] p-12 md:p-20 relative overflow-hidden">
-        <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <h3 className="text-white text-3xl md:text-4xl font-normal font-['Instrument_Serif',serif] leading-tight mb-6">
-              Inspirado en estándares <br />
-              <span className="text-[#0FB888]">globales de salud.</span>
-            </h3>
-            <div className="flex gap-4 items-center">
-              <div className="h-[1px] w-12 bg-white/20" />
-              <span className="text-white/40 text-[10px] font-black uppercase tracking-widest">JAMA Clinical Update 2026</span>
-            </div>
-          </div>
-
-          <div className="text-white/80 text-lg md:text-xl font-light leading-relaxed border-l border-white/10 md:pl-12">
-            USA acaba de extender 5 años más su programa de{' '}
-            <span className="text-white font-bold underline decoration-[#0FB888] underline-offset-4 tracking-tight">Hospital at Home</span>.
-            <br className="mb-4" />
-            Lo que ocurre hoy en los sistemas más avanzados es la hoja de ruta de OLGA para Latinoamérica.
-          </div>
+          <p className="max-w-2xl text-slate-500 text-lg md:text-xl font-light leading-relaxed">
+            Una vez conectado el ecosistema, OLGA escala el modelo para habilitar
+            atención hospitalaria de <strong className="text-[#0A1F1A] font-medium">alta complejidad fuera de la institución.</strong>
+          </p>
         </div>
 
-        <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-[#0FB888]/20 blur-[120px] rounded-full" />
-        <div className="absolute -top-24 -left-24 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full" />
+        {/* GRID DE TARJETAS */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-24">
+          {cards.map((card, index) => (
+            <div
+              key={index}
+              className="group relative p-8 md:p-10 rounded-[2rem] bg-white border border-slate-100 hover:border-[#0FB888]/20 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_20px_50px_rgba(15,184,136,0.06)] flex flex-col items-start overflow-hidden"
+            >
+              {/* Dot decorativo */}
+              <div className={`absolute top-8 right-8 w-2 h-2 rounded-full ${card.accent} opacity-20 group-hover:opacity-100 transition-opacity duration-300 shadow-sm`} />
+
+              {/* Ícono */}
+              <div className="w-14 h-14 rounded-2xl bg-[#F0FBF6] text-[#0FB888] flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-[#0FB888] group-hover:text-white transition-all duration-500 shadow-sm">
+                <Ico id={card.id} className="w-7 h-7" />
+              </div>
+
+              {/* Contenido */}
+              <h4 
+                className="text-[#0A1F1A] text-xl md:text-2xl font-bold mb-3 tracking-tight transition-colors group-hover:text-[#0FB888]"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {card.title}
+              </h4>
+
+              <p className="text-slate-500 text-[0.95rem] leading-relaxed font-light transition-colors group-hover:text-slate-600">
+                {card.desc}
+              </p>
+
+              {/* Línea de progreso animada en el fondo */}
+              <div className="absolute bottom-0 left-0 w-0 group-hover:w-full h-1 bg-gradient-to-r from-[#0FB888]/80 to-[#2BB38E]/40 transition-all duration-700 ease-out" />
+            </div>
+          ))}
+
+          {/* TARJETA CTA FINAL (Ocupa el último hueco en desktop) */}
+          <div className="hidden lg:flex p-10 rounded-[2rem] bg-gradient-to-br from-[#0A1F1A] to-[#12332B] items-center justify-center text-center relative overflow-hidden shadow-2xl border border-white/5">
+            <div className="absolute inset-0 opacity-20 pointer-events-none">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-[#0FB888] via-transparent to-transparent blur-2xl" />
+            </div>
+            <div className="relative z-10 flex flex-col items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/20 text-white">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              </div>
+              <div 
+                className="text-white font-bold text-2xl tracking-tight"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                El futuro ya es real.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* =========================================
+            BANNER DE AUTORIDAD 
+        ========================================= */}
+        <div className="bg-gradient-to-br from-[#0A1F1A] to-[#112A24] rounded-[2.5rem] md:rounded-[3rem] p-10 md:p-16 lg:p-20 relative overflow-hidden shadow-2xl border border-slate-800">
+          
+          {/* Efectos de luz del banner */}
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#0FB888]/10 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute -top-24 -left-24 w-80 h-80 bg-blue-500/10 blur-[100px] rounded-full pointer-events-none" />
+          
+          <div className="relative z-10 grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+            
+            {/* Lado Izquierdo - Título */}
+            <div>
+              <h3 
+                className="text-white text-3xl md:text-4xl lg:text-5xl font-extrabold leading-[1.1] mb-8 tracking-tighter"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                Inspirado en estándares <br className="hidden lg:block" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0FB888] to-teal-400">
+                  globales de salud.
+                </span>
+              </h3>
+              <div className="flex gap-4 items-center">
+                <div className="h-[2px] w-12 bg-white/20 rounded-full" />
+                <span className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">JAMA Clinical Update 2026</span>
+              </div>
+            </div>
+
+            {/* Lado Derecho - Texto de autoridad */}
+            <div className="text-slate-300 text-lg md:text-xl font-light leading-relaxed border-l-2 border-white/10 pl-6 md:pl-10">
+              USA acaba de extender 5 años más su programa de{' '}
+              <span className="text-white font-bold underline decoration-[#0FB888]/80 decoration-2 underline-offset-4 tracking-tight">
+                Hospital at Home
+              </span>.
+              <br className="mb-6 block" />
+              Lo que ocurre hoy en los sistemas más avanzados es la <strong className="text-white font-medium">hoja de ruta de OLGA</strong> para Latinoamérica.
+            </div>
+            
+          </div>
+        </div>
+
       </div>
     </section>
   );

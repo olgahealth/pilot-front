@@ -21,11 +21,10 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <section className="py-24 bg-[#0A1F1A] text-white overflow-hidden relative" id="features">
+    <section className="py-24 md:py-32 bg-[#0A1F1A] text-white overflow-hidden relative" id="features">
 
       {/* ── SVG Sprite (oculto) ── */}
       <svg aria-hidden="true" style={{ display: 'none' }}>
-
         {/* Geofencing — map pin */}
         <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
@@ -80,43 +79,66 @@ const FeaturesSection = () => {
         <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
         </symbol>
-
       </svg>
 
-      {/* Background gradient */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0FB888]/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+      {/* Luces Ambientales (Background glows) */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#0FB888]/10 rounded-full blur-[140px] -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#0FB888]/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="mb-16">
-          <div className="inline-block text-[#0FB888] text-[0.7rem] font-bold tracking-[3px] uppercase mb-4">
+        
+        {/* Cabecera */}
+        <div className="mb-20 md:text-center max-w-4xl md:mx-auto flex flex-col md:items-center">
+          <div className="inline-block px-4 py-1.5 bg-[#0FB888]/10 border border-[#0FB888]/20 text-[#0FB888] rounded-full text-[11px] font-bold tracking-[0.15em] uppercase mb-6 backdrop-blur-sm">
             Capacidades de la plataforma
           </div>
-          <h2 className="font-['Instrument_Serif',serif] text-[clamp(2.2rem,5vw,3.8rem)] text-white mb-6 font-normal leading-[1.1]">
-            Todo conectado. Todo <em className="text-[#0FB888] italic">verificable.</em>
+          
+          {/* Título unificado con DM Sans */}
+          <h2 
+            className="text-4xl md:text-5xl lg:text-6xl text-white mb-6 font-extrabold leading-[1.05] tracking-tighter"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Todo conectado. <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0FB888] to-[#2BB38E]">
+              Todo verificable.
+            </span>
           </h2>
-          <p className="max-w-2xl text-white/60 text-[1.1rem] leading-relaxed font-light">
-            Comunicación bidireccional, verificación automática, y visibilidad en tiempo real para cada actor del ecosistema.
+          
+          <p className="text-slate-400 text-lg md:text-xl leading-relaxed font-light">
+            Comunicación bidireccional, verificación automática, y visibilidad en tiempo real <strong className="text-white font-medium">para cada actor del ecosistema.</strong>
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        {/* Grid de Tarjetas (Dark Glassmorphism) */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
           {features.map((feat) => (
-            <div
+            <article
               key={feat.id}
-              className="group bg-white/5 p-8 rounded-[2.5rem] border border-white/5 hover:border-[#0FB888]/30 transition-all duration-500 hover:-translate-y-2"
+              className="group relative bg-[#122b24]/40 backdrop-blur-md p-8 md:p-10 rounded-[2rem] border border-white/5 hover:border-[#0FB888]/30 transition-all duration-500 hover:-translate-y-1.5 hover:bg-[#122b24]/80 hover:shadow-[0_20px_40px_rgba(15,184,136,0.08)] overflow-hidden"
             >
-              <div className="w-12 h-12 rounded-2xl bg-[#0FB888] text-white flex items-center justify-center mb-6 shadow-lg shadow-[#0FB888]/20 group-hover:scale-110 transition-transform duration-500">
-                <Ico id={feat.id} className="w-6 h-6" />
+              {/* Brillo sutil en hover (Glow inside card) */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#0FB888]/10 rounded-full blur-3xl -translate-y-10 translate-x-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+              <div className="relative z-10">
+                <div className="w-14 h-14 rounded-2xl bg-[#0FB888]/10 text-[#0FB888] flex items-center justify-center mb-8 border border-[#0FB888]/20 group-hover:bg-[#0FB888] group-hover:text-white transition-all duration-500 group-hover:shadow-[0_0_20px_rgba(15,184,136,0.3)] group-hover:scale-110">
+                  <Ico id={feat.id} className="w-6 h-6" />
+                </div>
+                
+                <h4 
+                  className="text-xl md:text-2xl font-bold text-white mb-3 tracking-tight transition-colors duration-300"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {feat.title}
+                </h4>
+                
+                <p className="text-slate-400 text-sm md:text-base leading-relaxed group-hover:text-slate-300 transition-colors duration-500 font-light">
+                  {feat.desc}
+                </p>
               </div>
-              <h4 className="text-xl font-bold text-white mb-3 tracking-tight">
-                {feat.title}
-              </h4>
-              <p className="text-white/40 text-[0.95rem] leading-relaxed group-hover:text-white/70 transition-colors duration-500">
-                {feat.desc}
-              </p>
-            </div>
+            </article>
           ))}
         </div>
+        
       </div>
     </section>
   );
