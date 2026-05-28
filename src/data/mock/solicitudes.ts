@@ -17,6 +17,8 @@ export type Solicitud = {
   urgencia: Urgencia;
   estado: EstadoSolicitud;
   fecha: string;
+  cie_codigo?:  string;
+  cie_version?: "CIE-10" | "CIE-11";
 };
 
 export const solicitudes: Solicitud[] = [

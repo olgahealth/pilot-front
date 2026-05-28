@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft, CheckCircle, Clock, XCircle,
-  AlertTriangle, Activity, Phone, FileText,
-  MapPin, PenLine, AlertCircle, Circle
+  AlertTriangle, Phone,
+  MapPin, PenLine, AlertCircle, Circle,
+  ClipboardList, HeartPulse, TrendingUp, TrendingDown, Minus,
 } from "lucide-react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
@@ -22,6 +23,20 @@ type Riesgo    = "alto" | "medio" | "bajo";
 type Tendencia = "mejorando" | "estable" | "deteriorando";
 type Estado    = "cumplido" | "pendiente" | "no_cumplido";
 type ModalType = "modificar" | "derivar" | null;
+
+interface Plan {
+  nombre: string;
+  descripcion: string;
+  tipo_servicio: string;
+  medico_solicitante: string;
+  hospital: string;
+  costo_estimado: number;
+  urgencia: string;
+  estado_solicitud: string;
+  fecha_solicitud: string;
+  cie_codigo?: string | null;
+  cie_version?: string | null;
+}
 
 interface TimelineItem {
   id: number;
@@ -58,9 +73,34 @@ interface PatientDetail {
   phone: string;
   timeline: TimelineItem[];
   vitales: VitalItem[];
+  plan: Plan | null;
 }
 
-// ── constantes de UI (igual que antes) ──────────────────
+// ── constantes de UI ────────────────────────────────────
+const PLAN_STYLES: Record<string, { bg: string; text: string; border: string }> = {
+  PHD:                { bg: "bg-violet-50",  text: "text-violet-700",  border: "border-violet-200"  },
+  PAD:                { bg: "bg-blue-50",    text: "text-blue-700",    border: "border-blue-200"    },
+  PARD:               { bg: "bg-indigo-50",  text: "text-indigo-700",  border: "border-indigo-200"  },
+  "Curaciones en Casa":{ bg: "bg-rose-50",   text: "text-rose-700",    border: "border-rose-200"    },
+};
+
+const ESTADO_SOL_STYLES: Record<string, { bg: string; text: string; dot: string; label: string }> = {
+  aprobado:             { bg: "bg-emerald-100", text: "text-emerald-700", dot: "bg-emerald-500", label: "Aprobado"            },
+  aprobado_condiciones: { bg: "bg-amber-100",   text: "text-amber-700",   dot: "bg-amber-500",   label: "Aprobado con cond." },
+  pendiente:            { bg: "bg-gray-100",     text: "text-gray-600",    dot: "bg-gray-400",    label: "Pendiente"          },
+  negado:               { bg: "bg-red-100",      text: "text-red-700",     dot: "bg-red-500",     label: "Negado"             },
+};
+
+const TENDENCIA_ICON = {
+  mejorando:    { Icon: TrendingUp,   color: "text-emerald-600", label: "Mejorando" },
+  estable:      { Icon: Minus,        color: "text-gray-500",    label: "Estable"   },
+  deteriorando: { Icon: TrendingDown, color: "text-red-600",     label: "Deteriorando" },
+};
+
+function formatCOP(n: number) {
+  return new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(n);
+}
+
 const ESTADO_ICON = {
   cumplido:    { icon: CheckCircle, color: "text-emerald-600", bg: "bg-emerald-100", line: "bg-emerald-500" },
   pendiente:   { icon: Clock,       color: "text-gray-400",    bg: "bg-gray-100",    line: "bg-gray-300"   },
@@ -186,6 +226,189 @@ export default function PacienteDetallePage({ id }: { id: number }) {
           </div>
         </div>
       )}
+
+      {/* ── 3 cards: Plan · Orden · Historia clínica ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+
+        {/* Card A · Plan de Atención (2/5) */}
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm p-5 space-y-4">
+          {data.plan ? (
+            <>
+              <div className="flex items-center gap-2">
+                <span className={`text-xs font-black px-2.5 py-1 rounded-md border uppercase tracking-wider ${
+                  (PLAN_STYLES[data.plan.nombre] ?? PLAN_STYLES["PARD"]).bg
+                } ${(PLAN_STYLES[data.plan.nombre] ?? PLAN_STYLES["PARD"]).text
+                } ${(PLAN_STYLES[data.plan.nombre] ?? PLAN_STYLES["PARD"]).border}`}>
+                  {data.plan.nombre}
+                </span>
+                <h2 className="text-sm font-bold text-gray-900">Plan de Atención</h2>
+              </div>
+
+              {/* Día + barra de progreso */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs font-semibold text-gray-600">Día {data.dias_post_alta} de tratamiento</span>
+                  <span className={`text-xs font-bold ${
+                    data.adherencia >= 90 ? "text-emerald-600" :
+                    data.adherencia >= 70 ? "text-amber-600" : "text-red-600"
+                  }`}>{data.adherencia}% adherencia</span>
+                </div>
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all ${
+                      data.adherencia >= 90 ? "bg-emerald-500" :
+                      data.adherencia >= 70 ? "bg-amber-500" : "bg-red-500"
+                    }`}
+                    style={{ width: `${data.adherencia}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Descripción del plan */}
+              <p className="text-xs text-gray-600 leading-relaxed border-l-2 border-gray-200 pl-3">
+                {data.plan.descripcion}
+              </p>
+
+              {/* Médico + hospital */}
+              <div className="flex items-center gap-1.5 text-[11px] text-gray-400 font-medium">
+                <span>{data.plan.medico_solicitante}</span>
+                <span className="text-gray-200">·</span>
+                <span>{data.plan.hospital}</span>
+              </div>
+
+              {/* Urgencia + costo */}
+              <div className="flex items-center gap-2 pt-1 border-t border-gray-100">
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                  data.plan.urgencia === "urgente"
+                    ? "bg-red-50 text-red-600 border border-red-100"
+                    : "bg-gray-100 text-gray-500"
+                }`}>
+                  {data.plan.urgencia === "urgente" ? "Urgente" : "Programado"}
+                </span>
+                <span className="text-xs font-bold text-gray-700">{formatCOP(data.plan.costo_estimado)}<span className="text-[10px] font-normal text-gray-400">/mes</span></span>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full py-8 text-gray-300">
+              <ClipboardList className="w-8 h-8 mb-2" />
+              <p className="text-xs font-medium">Sin plan registrado</p>
+            </div>
+          )}
+        </div>
+
+        {/* Card B · Orden Clínica (1.5/5) */}
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <ClipboardList className="w-4 h-4 text-gray-400" />
+            <h2 className="text-sm font-bold text-gray-900">Orden Clínica</h2>
+          </div>
+          {data.plan ? (
+            <>
+              <div className="space-y-2.5">
+                <div>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Tipo de servicio</p>
+                  <p className="text-sm font-semibold text-gray-800 mt-0.5">{data.plan.tipo_servicio}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Estado</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full ${
+                      (ESTADO_SOL_STYLES[data.plan.estado_solicitud] ?? ESTADO_SOL_STYLES["pendiente"]).bg
+                    } ${(ESTADO_SOL_STYLES[data.plan.estado_solicitud] ?? ESTADO_SOL_STYLES["pendiente"]).text}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${(ESTADO_SOL_STYLES[data.plan.estado_solicitud] ?? ESTADO_SOL_STYLES["pendiente"]).dot}`} />
+                      {(ESTADO_SOL_STYLES[data.plan.estado_solicitud] ?? ESTADO_SOL_STYLES["pendiente"]).label}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Fecha solicitud</p>
+                  <p className="text-sm font-medium text-gray-700 mt-0.5">{data.plan.fecha_solicitud}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Valor facturable</p>
+                  <p className="text-sm font-bold text-gray-900 mt-0.5">{formatCOP(data.plan.costo_estimado)}<span className="text-[10px] font-normal text-gray-400"> / mes</span></p>
+                </div>
+                {data.plan.cie_codigo && (
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Clasificación</p>
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
+                      {data.plan.cie_version ?? "CIE-10"} {data.plan.cie_codigo}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full py-8 text-gray-300">
+              <ClipboardList className="w-8 h-8 mb-2" />
+              <p className="text-xs font-medium">Sin orden registrada</p>
+            </div>
+          )}
+        </div>
+
+        {/* Card C · Historia Clínica (1.5/5) */}
+        <div className="lg:col-span-1 bg-white rounded-2xl border border-gray-200 shadow-sm p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <HeartPulse className="w-4 h-4 text-gray-400" />
+            <h2 className="text-sm font-bold text-gray-900">Historia Clínica</h2>
+          </div>
+
+          {/* Dx principal */}
+          <div>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Dx principal</p>
+            <p className="text-xs font-semibold text-gray-800 mt-0.5 leading-snug">{data.diagnostico}</p>
+          </div>
+
+          {/* Condiciones activas */}
+          <div>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Condiciones activas</p>
+            <div className="space-y-1">
+              {[
+                { label: "Cardiopatía",   key: /cardia|cardio|icc|insuficiencia card/i },
+                { label: "Diabetes",      key: /diabet/i },
+                { label: "EPOC",          key: /epoc/i },
+                { label: "HTA",           key: /hipertens|hta/i },
+                { label: "Oncológico",    key: /cáncer|cancer|oncol|quimio/i },
+                { label: "Renal",         key: /renal|nefro|riñón/i },
+                { label: "Neurológico",   key: /acv|neurolog|parkins|dement/i },
+                { label: "Post-quirúrgico",key: /post.quirúrgico|post.operat|prótesis|fractura/i },
+              ]
+                .filter(c => c.key.test(data.diagnostico))
+                .map(c => (
+                  <div key={c.label} className="flex items-center gap-1.5 text-[11px] text-gray-600">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 flex-shrink-0" />
+                    {c.label}
+                  </div>
+                ))}
+              {data.riesgo === "alto" && (
+                <div className="flex items-center gap-1.5 text-[11px] text-amber-700">
+                  <AlertCircle className="w-3 h-3 flex-shrink-0" />
+                  Polifarmacia probable
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Tendencia */}
+          <div>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Tendencia</p>
+            {(() => {
+              const t = TENDENCIA_ICON[data.tendencia] ?? TENDENCIA_ICON["estable"];
+              return (
+                <div className={`flex items-center gap-1 mt-0.5 text-xs font-bold ${t.color}`}>
+                  <t.Icon className="w-3.5 h-3.5" /> {t.label}
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* Médico + EPS */}
+          <div className="pt-2 border-t border-gray-100 space-y-0.5">
+            <p className="text-[11px] text-gray-500"><span className="font-semibold text-gray-700">{data.medico}</span></p>
+            <p className="text-[11px] text-gray-400">{data.eps}</p>
+          </div>
+        </div>
+      </div>
 
       {/* Timeline + Vitales */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

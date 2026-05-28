@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   AlertTriangle,
   Users,
   FileText,
   ChevronRight,
+  ChevronUp,
   ArrowUpRight,
   LucideIcon,
   Activity,
@@ -18,8 +20,18 @@ import {
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
-type Alerta = { id: number; nombre: string; diagnostico: string; riesgo_pct: number; tendencia: string };
-type Kpis   = { pacientes_activos: number; alertas_criticas: number; por_autorizar: number; ejecucion_pct: number };
+type Alerta      = { id: number; nombre: string; diagnostico: string; riesgo_pct: number; tendencia: string };
+type Kpis        = { pacientes_activos: number; alertas_criticas: number; por_autorizar: number; ejecucion_pct: number };
+type Modalidades = { pad: number; phd: number; rehab: number };
+type PacientePagador = { diagnostico: string; dias_post_alta: number; riesgo: string; [key: string]: unknown };
+
+function getPaquete(p: PacientePagador): string {
+  if (/cáncer|cancer|oncol|palia|terminal/i.test(p.diagnostico)) return "Paliativo";
+  if (p.dias_post_alta > 180) return "Alto Costo";
+  if (p.riesgo === "alto" && p.dias_post_alta < 30) return "PHD";
+  if (p.riesgo === "alto") return "PAD";
+  return "PARD";
+}
 
 // --- COMPONENTS ---
 const MiniKpi = ({ title, value, icon: Icon, color, bg, tooltip }: { title: string, value: string, icon: LucideIcon, color: string, bg: string, tooltip?: string }) => {
@@ -85,6 +97,31 @@ export default function DashboardCompacto() {
   const [alertas, setAlertas] = useState<Alerta[]>([]);
   const [topSolicitudes, setTopSolicitudes] = useState<{ id: number; paciente: string; plan_nombre: string; urgencia: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showModalidades, setShowModalidades] = useState(false);
+  const [modalidades, setModalidades] = useState<Modalidades | null>(null);
+  const [loadingMod, setLoadingMod] = useState(false);
+
+  async function fetchModalidades() {
+    setLoadingMod(true);
+    const token = localStorage.getItem("auth_token");
+    try {
+      const r = await fetch(`${API}/api/v1/eps/pacientes`, {
+        headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+      });
+      const data = await r.json();
+      const pacientes: PacientePagador[] = data.data ?? data ?? [];
+      let pad = 0, phd = 0, rehab = 0;
+      for (const p of pacientes) {
+        const mod = getPaquete(p);
+        if (mod === "PAD") pad++;
+        else if (mod === "PHD") phd++;
+        else if (mod === "PARD") rehab++;
+      }
+      setModalidades({ pad, phd, rehab });
+    } finally {
+      setLoadingMod(false);
+    }
+  }
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
@@ -136,8 +173,55 @@ export default function DashboardCompacto() {
             </>
           ) : (
             <>
-              <MiniKpi title="Pacientes activos" value={String(kpis.pacientes_activos)} icon={Users} color="text-indigo-600" bg="bg-indigo-50"
-                tooltip="Total de afiliados con plan domiciliario autorizado y activo en la red de prestadores." />
+              {/* Pacientes activos — expandible por modalidad */}
+              <div className="relative rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-sm font-medium text-slate-500 uppercase tracking-tight">Pacientes activos</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowModalidades((v) => !v);
+                      if (!modalidades && !loadingMod) fetchModalidades();
+                    }}
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-indigo-50 hover:ring-2 ring-indigo-300 transition-all cursor-pointer"
+                    title="Ver desglose por modalidad"
+                  >
+                    {showModalidades
+                      ? <ChevronUp className="h-4 w-4 text-indigo-600" />
+                      : <Users className="h-4 w-4 text-indigo-600" />}
+                  </button>
+                </div>
+                <div className="mt-4">
+                  <p className="text-3xl font-semibold tracking-tight text-slate-900">{String(kpis.pacientes_activos)}</p>
+                </div>
+                <AnimatePresence>
+                  {showModalidades && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-3 pt-3 border-t border-slate-100 grid grid-cols-3 gap-2">
+                        <div className="flex flex-col items-center bg-blue-50 rounded-lg p-2">
+                          <span className="text-[10px] font-bold text-blue-600 uppercase tracking-tight">PAD</span>
+                          <span className="text-lg font-bold text-blue-700">{loadingMod ? "…" : (modalidades?.pad ?? "–")}</span>
+                        </div>
+                        <div className="flex flex-col items-center bg-violet-50 rounded-lg p-2">
+                          <span className="text-[10px] font-bold text-violet-600 uppercase tracking-tight">PHD</span>
+                          <span className="text-lg font-bold text-violet-700">{loadingMod ? "…" : (modalidades?.phd ?? "–")}</span>
+                        </div>
+                        <div className="flex flex-col items-center bg-indigo-50 rounded-lg p-2">
+                          <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-tight leading-tight text-center">Rehab</span>
+                          <span className="text-lg font-bold text-indigo-700">{loadingMod ? "…" : (modalidades?.rehab ?? "–")}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
               <MiniKpi title="Alertas críticas" value={String(kpis.alertas_criticas).padStart(2, "0")} icon={ShieldAlert} color="text-rose-600" bg="bg-rose-50"
                 tooltip="Pacientes con visita no confirmada en 48h o signos vitales fuera de rango. Requieren intervención inmediata." />
               <MiniKpi title="Por autorizar" value={String(kpis.por_autorizar).padStart(2, "0")} icon={FileText} color="text-amber-600" bg="bg-amber-50"

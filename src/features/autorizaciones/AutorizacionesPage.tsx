@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import {
@@ -11,6 +11,7 @@ import {
   Filter,
   Search,
   ChevronDown,
+  Paperclip,
 } from "lucide-react";
 import { type Solicitud, type EstadoSolicitud } from "@/data/mock/solicitudes";
 
@@ -51,6 +52,11 @@ export default function AutorizacionesPage() {
   const [filterEstado, setFilterEstado] = useState<EstadoSolicitud | "todos">("todos");
   const [filterTipo, setFilterTipo] = useState("Todos");
   const [masInfoSolicitud, setMasInfoSolicitud] = useState<Solicitud | null>(null);
+  const [negando, setNegando] = useState<{ id: number } | null>(null);
+  const [justificacion, setJustificacion] = useState("");
+  const [adjuntos, setAdjuntos] = useState<File[]>([]);
+  const [intentoEnvio, setIntentoEnvio] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
@@ -71,7 +77,8 @@ export default function AutorizacionesPage() {
       const matchSearch =
         s.paciente.toLowerCase().includes(search.toLowerCase()) ||
         s.diagnostico.toLowerCase().includes(search.toLowerCase()) ||
-        s.medico_solicitante.toLowerCase().includes(search.toLowerCase());
+        s.medico_solicitante.toLowerCase().includes(search.toLowerCase()) ||
+        (s.cie_codigo ?? "").toLowerCase().includes(search.toLowerCase());
       const matchUrgencia = filterUrgencia === "todos" || s.urgencia === filterUrgencia;
       const matchTipo     = filterTipo === "Todos" || s.tipo_servicio === filterTipo;
       const matchEstado   = filterEstado === "todos" || (estados[s.id] ?? s.estado) === filterEstado;
@@ -82,11 +89,33 @@ export default function AutorizacionesPage() {
   const pendientes = Object.values(estados).filter((e) => e === "pendiente").length;
 
   function handleAccion(id: number, accion: EstadoSolicitud) {
-    if (accion === "aprobado") {
-      setConfirming({ id, accion });
-      return;
-    }
+    if (accion === "aprobado") { setConfirming({ id, accion }); return; }
+    if (accion === "negado")   { setNegando({ id }); return; }
     aplicarAccion(id, accion);
+  }
+
+  function cerrarModalNegacion() {
+    setNegando(null);
+    setJustificacion("");
+    setAdjuntos([]);
+    setIntentoEnvio(false);
+  }
+
+  function confirmarNegacion() {
+    setIntentoEnvio(true);
+    if (!negando || justificacion.trim().length < 10) return;
+    const id = negando.id;
+    setEstados((prev) => ({ ...prev, [id]: "negado" }));
+    cerrarModalNegacion();
+    const token = localStorage.getItem("auth_token");
+    fetch(`${API}/api/v1/eps/solicitudes/${id}/estado`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, Accept: "application/json" },
+      body: JSON.stringify({ estado: "negado", justificacion: justificacion.trim(), adjuntos: adjuntos.map((f) => f.name) }),
+    }).catch(() => {});
+    toast("Solicitud negada", {
+      style: { background: "#DC2626", color: "#fff", fontWeight: "600", borderRadius: "10px" },
+    });
   }
 
   function aplicarAccion(id: number, accion: EstadoSolicitud) {
@@ -255,6 +284,11 @@ export default function AutorizacionesPage() {
                     </td>
                     <td className="px-4 py-4">
                       <p className="text-gray-700 max-w-[160px] leading-tight">{s.diagnostico}</p>
+                      {s.cie_codigo && (
+                        <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
+                          {s.cie_version ?? "CIE-10"} {s.cie_codigo}
+                        </span>
+                      )}
                       <p className="text-xs text-gray-400 mt-0.5">{s.tipo_servicio}</p>
                     </td>
                     <td className="px-4 py-4">
@@ -421,6 +455,130 @@ export default function AutorizacionesPage() {
         )}
       </AnimatePresence>
 
+      {/* ── Modal de justificación para Negar ── */}
+      <AnimatePresence>
+        {negando && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={cerrarModalNegacion}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                  <XCircle className="w-6 h-6 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900">Justificar negación</h3>
+                  <p className="text-xs text-gray-500">Esta acción quedará registrada en el sistema</p>
+                </div>
+              </div>
+
+              {/* Resumen de la solicitud */}
+              {(() => {
+                const sol = solicitudes.find((s) => s.id === negando.id);
+                return sol ? (
+                  <div className="bg-gray-50 rounded-xl p-4 mb-5 space-y-1.5">
+                    <p className="text-sm font-semibold text-gray-900">{sol.paciente}</p>
+                    <p className="text-xs text-gray-500"><span className="font-semibold text-gray-700">{sol.plan_nombre}</span> · {sol.plan_propuesto}</p>
+                    <p className="text-sm font-bold text-red-700">{formatCOP(sol.costo_estimado)} / mes <span className="text-xs font-normal text-gray-400">(valor facturable)</span></p>
+                  </div>
+                ) : null;
+              })()}
+
+              {/* Textarea justificación */}
+              <div className="mb-4">
+                <label className="block text-xs font-bold text-gray-700 mb-1.5">
+                  Motivo del rechazo <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={justificacion}
+                  onChange={(e) => setJustificacion(e.target.value)}
+                  rows={4}
+                  placeholder="Describa el motivo por el cual se niega esta solicitud de autorización..."
+                  className={`w-full text-sm border rounded-xl px-3 py-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400 transition-colors ${
+                    intentoEnvio && justificacion.trim().length < 10
+                      ? "border-red-400 bg-red-50"
+                      : "border-gray-200"
+                  }`}
+                />
+                {intentoEnvio && justificacion.trim().length < 10 && (
+                  <p className="text-xs text-red-600 mt-1">El motivo debe tener al menos 10 caracteres.</p>
+                )}
+              </div>
+
+              {/* Adjuntar documentos */}
+              <div className="mb-6">
+                <label className="block text-xs font-bold text-gray-700 mb-1.5">Documentos de soporte <span className="text-gray-400 font-normal">(opcional)</span></label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  className="hidden"
+                  onChange={(e) => {
+                    const nuevos = Array.from(e.target.files ?? []);
+                    setAdjuntos((prev) => [...prev, ...nuevos]);
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center gap-2 text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition-colors"
+                >
+                  <Paperclip className="w-3.5 h-3.5" /> Adjuntar archivo
+                </button>
+                {adjuntos.length > 0 && (
+                  <ul className="mt-2 space-y-1">
+                    {adjuntos.map((f, i) => (
+                      <li key={i} className="flex items-center justify-between text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5">
+                        <span className="text-gray-700 truncate max-w-[280px]">{f.name}</span>
+                        <button
+                          type="button"
+                          onClick={() => setAdjuntos((prev) => prev.filter((_, idx) => idx !== i))}
+                          className="ml-2 text-gray-400 hover:text-red-500 font-bold flex-shrink-0"
+                        >
+                          ✕
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              {/* Botones */}
+              <div className="flex gap-3">
+                <button
+                  onClick={cerrarModalNegacion}
+                  className="flex-1 py-2.5 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+                >
+                  Cancelar
+                </button>
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
+                  onClick={confirmarNegacion}
+                  className="flex-1 py-2.5 text-sm font-bold text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors flex items-center justify-center gap-2"
+                >
+                  <XCircle className="w-4 h-4" />
+                  Negar solicitud
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Modal Más info — documentos clínicos ── */}
       <AnimatePresence>
         {masInfoSolicitud && (
@@ -454,6 +612,11 @@ export default function AutorizacionesPage() {
               <div className="bg-gray-50 rounded-xl p-3 mb-5 space-y-1">
                 <p className="text-xs text-gray-500">Diagnóstico</p>
                 <p className="text-sm font-semibold text-gray-900">{masInfoSolicitud.diagnostico}</p>
+                {masInfoSolicitud.cie_codigo && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
+                    {masInfoSolicitud.cie_version ?? "CIE-10"} {masInfoSolicitud.cie_codigo}
+                  </span>
+                )}
                 <p className="text-xs text-gray-500 mt-1">{masInfoSolicitud.plan_nombre} · {masInfoSolicitud.plan_propuesto}</p>
               </div>
 
