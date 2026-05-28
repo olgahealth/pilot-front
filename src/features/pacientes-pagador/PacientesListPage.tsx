@@ -13,7 +13,6 @@ import {
   AlertTriangle,
   AlertCircle,
   Activity,
-  ArrowUpRight
 } from "lucide-react";
 import { usePagination } from "@/utils/usePagination";
 import PaginationBar from "@/components/PaginationBar";
@@ -242,7 +241,6 @@ export default function PacientesListPage() {
                 <th className="text-left px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Riesgo Bio</th>
                 <th className="text-left px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Adherencia</th>
                 <th className="text-left px-4 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Tendencia</th>
-                <th className="text-center px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Acción</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -289,13 +287,6 @@ export default function PacientesListPage() {
                     </td>
                     <td className="px-4 py-4">
                       <TendenciaBadge t={p.tendencia} />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-center">
-                         <div className="p-2 rounded-lg bg-slate-50 text-slate-400 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
-                            <ArrowUpRight className="w-4 h-4" />
-                         </div>
-                      </div>
                     </td>
                   </tr>
                 );
