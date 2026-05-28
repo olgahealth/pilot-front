@@ -1,110 +1,116 @@
 import React from 'react';
 
-// El SVG wrapper no pone fill — cada symbol define el suyo propio
-const Ico = ({ id }: { id: string }) => (
-  <svg className="w-5 h-5">
-    <use href={`#${id}`} />
-  </svg>
-);
-
 const ProblemSection = () => {
+  // Datos actualizados con URLs de imágenes (usando Unsplash como placeholders de alta calidad)
   const problems = [
-    { id: 'i-mail',      title: 'Correos electrónicos',      desc: 'Solicitudes de autorización, aceptaciones, y reportes que llegan días después — si es que llegan.' },
-    { id: 'i-msg',       title: 'Grupos de WhatsApp',        desc: 'Auditores, coordinadores y prestadores intercambian información crítica en chats que se pierden entre mensajes.' },
-    { id: 'i-sheet',     title: 'Cuadros de turnos en Excel', desc: 'La programación de visitas vive en hojas de cálculo que nadie más puede ver en tiempo real.' },
-    { id: 'i-phone',     title: 'Llamadas sin registro',     desc: 'Coordinaciones telefónicas que no quedan documentadas. Si alguien pregunta qué pasó, nadie tiene el dato.' },
-    { id: 'i-ghost',     title: 'Visitas fantasma',          desc: 'Servicios que se reportan como prestados pero nadie verifica si el profesional realmente llegó al domicilio.' },
-    { id: 'i-hourglass', title: 'Pérdida de trazabilidad',   desc: 'El paciente desaparece del radar clínico. Nadie sabe si mejoró, empeoró, o necesita intervención urgente.' },
+    { 
+      title: 'Correos electrónicos',      
+      desc: 'Solicitudes de autorización, aceptaciones, y reportes que llegan días después — si es que llegan.',
+      img: 'https://images.unsplash.com/photo-1587614382346-4ec70e388b28?auto=format&fit=crop&q=80&w=1000'
+    },
+    { 
+      title: 'Grupos de WhatsApp',        
+      desc: 'Auditores, coordinadores y prestadores intercambian información crítica en chats que se pierden.',
+      img: 'https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&q=80&w=800'
+    },
+    { 
+      title: 'Cuadros de turnos', 
+      desc: 'La programación de visitas vive en hojas de cálculo estáticas que nadie más puede ver en tiempo real.',
+      img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800'
+    },
+    { 
+      title: 'Llamadas sin registro',     
+      desc: 'Coordinaciones telefónicas que no quedan documentadas. Si alguien pregunta qué pasó, nadie tiene el dato.',
+      img: 'https://images.unsplash.com/photo-1596265371388-43edbaadab94?auto=format&fit=crop&q=80&w=1000'
+    },
+    { 
+      title: 'Visitas fantasma',          
+      desc: 'Servicios que se reportan como prestados pero nadie verifica si el profesional realmente llegó al domicilio.',
+      img: 'https://images.unsplash.com/photo-1584516150909-c43483ee7932?auto=format&fit=crop&q=80&w=800'
+    },
+    { 
+      title: 'Pérdida de trazabilidad',   
+      desc: 'El paciente desaparece del radar clínico. Nadie sabe si mejoró, empeoró, o necesita intervención urgente.',
+      img: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&q=80&w=800'
+    },
   ];
 
   return (
-    <section id="problem" className="bg-white py-24 px-6">
-
-      {/* ── SVG Sprite (oculto) ── */}
-      <svg aria-hidden="true" style={{ display: 'none' }}>
-        {/* Correos */}
-        <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="2" y="4" width="20" height="16" rx="2" />
-          <path d="M2 7l10 7 10-7" />
-        </symbol>
-
-        {/* WhatsApp — logo oficial fill */}
-        <symbol id="i-msg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.849L0 24l6.335-1.51A11.933 11.933 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.368l-.36-.214-3.724.888.923-3.629-.234-.373A9.784 9.784 0 012.182 12C2.182 6.697 6.697 2.182 12 2.182S21.818 6.697 21.818 12 17.303 21.818 12 21.818z" />
-        </symbol>
-
-        {/* Excel / tabla */}
-        <symbol id="i-sheet" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2" />
-          <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
-        </symbol>
-
-        {/* Teléfono */}
-        <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
-        </symbol>
-
-        {/* Fantasma */}
-        <symbol id="i-ghost" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 10h.01M15 10h.01M12 2a8 8 0 018 8v10l-3-2-2 2-2-2-2 2-2-2-3 2V10a8 8 0 018-8z" />
-        </symbol>
-
-        {/* Reloj de arena */}
-        <symbol id="i-hourglass" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M5 22h14M5 2h14" />
-          <path d="M17 22v-4.172a2 2 0 00-.586-1.414L12 12M7 22v-4.172a2 2 0 01.586-1.414L12 12" />
-          <path d="M7 2v4.172a2 2 0 00.586 1.414L12 12M17 2v4.172a2 2 0 01-.586 1.414L12 12" />
-        </symbol>
-      </svg>
-
+    <section id="problem" className="bg-[#F8FAFC] py-24 px-6 overflow-hidden">
       <div className="max-w-7xl mx-auto">
 
-        {/* Cabecera */}
-        <div className="mb-16">
-          <div className="inline-block px-3 py-1 bg-[#0FB888]/10 text-[#0FB888] rounded-full text-[10px] font-bold tracking-[2px] uppercase mb-6">
+        {/* Cabecera - Consistente con tipografía DM Sans */}
+        <div className="mb-16 md:text-center max-w-4xl mx-auto">
+          <div className="inline-block px-4 py-1.5 bg-[#0FB888]/10 border border-[#0FB888]/20 text-[#0FB888] rounded-full text-[11px] font-bold tracking-[0.15em] uppercase mb-6">
             El problema
           </div>
-          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-[#0A1F1A] mb-8 font-light leading-tight">
-            El <em className="text-[#0FB888] italic">Silencio Clínico</em> deteriora pacientes
+          <h2 
+            className="text-4xl md:text-5xl lg:text-6xl text-[#0A1F1A] mb-6 font-extrabold leading-[1.05] tracking-tighter"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            El <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0FB888] to-[#2BB38E]">Silencio Clínico</span> deteriora pacientes
           </h2>
-          <p className="text-[#4A6B62] text-lg md:text-xl max-w-3xl leading-relaxed font-light">
-            Cuando un paciente sale del hospital, todos los actores quedan ciegos. La comunicación entre ellos se reduce a herramientas que no fueron diseñadas para coordinar cuidado de salud.
+          <p className="text-slate-500 text-lg md:text-xl leading-relaxed font-light md:mx-auto">
+            Cuando un paciente sale del hospital, todos los actores quedan ciegos. La comunicación se reduce a herramientas genéricas que no fueron diseñadas para salvar vidas.
           </p>
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16 max-w-5xl mx-auto">
+        {/* GRID DE IMÁGENES (Bento Layout) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 mb-20">
           {problems.map((prob, index) => (
-            <div
+            <article
               key={index}
-              className="group bg-[#F8FAFC] border border-slate-100 rounded-[28px] p-8 transition-all duration-300 hover:bg-white hover:shadow-[0_20px_50px_rgba(0,0,0,0.04)] hover:border-[#0FB888]/20"
+              // Hacemos que el 1er y 4to elemento ocupen 2 columnas en Desktop para un look "Bento Grid"
+              className={`group relative overflow-hidden rounded-[32px] bg-[#0A1F1A] shadow-lg flex flex-col justify-end min-h-[340px] md:min-h-[380px] ${
+                index === 0 || index === 3 ? 'md:col-span-2 lg:col-span-2' : 'col-span-1'
+              }`}
             >
-              <div className="w-12 h-12 rounded-2xl bg-white shadow-sm text-[#0FB888] flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 group-hover:bg-[#0FB888] group-hover:text-white">
-                <Ico id={prob.id} />
+              {/* Imagen de fondo optimizada */}
+              <img 
+                src={prob.img} 
+                alt={prob.title}
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-105 opacity-80"
+              />
+              
+              {/* Gradiente Overlay para legibilidad (Oscurece al hacer hover) */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A1F1A] via-[#0A1F1A]/60 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-100" />
+              
+              {/* Contenido (Texto) */}
+              <div className="relative z-10 p-8 md:p-10 transform transition-transform duration-500 translate-y-2 group-hover:translate-y-0">
+                <h4 
+                  className="text-white text-2xl md:text-3xl font-bold mb-3 tracking-tight"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {prob.title}
+                </h4>
+                <p className="text-slate-300/90 text-sm md:text-base leading-relaxed font-light line-clamp-3">
+                  {prob.desc}
+                </p>
               </div>
-              <h4 className="text-[#0A1F1A] text-lg font-bold mb-3 tracking-tight">
-                {prob.title}
-              </h4>
-              <p className="text-[#4A6B62] text-sm leading-relaxed font-normal">
-                {prob.desc}
-              </p>
-            </div>
+            </article>
           ))}
         </div>
 
-        {/* Silence Box */}
-        <div className="relative overflow-hidden bg-[#0A1F1A] rounded-[40px] p-10 md:p-16 text-center shadow-2xl">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#0FB888]/10 rounded-full blur-3xl -mr-32 -mt-32" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#0FB888]/5 rounded-full blur-3xl -ml-32 -mb-32" />
-          <h3 className="relative z-10 font-serif text-3xl md:text-4xl text-white mb-6 leading-tight font-light">
-            Hospital → Alta → <span className="text-[#FF6B6B] italic font-normal">Silencio</span> → Urgencias
+        {/* Silence Box - Optimizado */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#0A1F1A] to-[#12332B] rounded-[40px] p-10 md:p-16 text-center shadow-2xl border border-white/5">
+          {/* Luces de fondo (Glow effects) */}
+          <div className="absolute top-0 right-0 w-72 h-72 bg-[#0FB888]/10 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-[#0FB888]/10 rounded-full blur-[80px] -ml-20 -mb-20 pointer-events-none" />
+          
+          <h3 
+            className="relative z-10 text-3xl md:text-5xl text-white mb-6 leading-tight font-extrabold tracking-tighter"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Hospital <span className="text-[#0FB888]/50 mx-2">→</span> Alta <span className="text-[#0FB888]/50 mx-2">→</span> <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-rose-600 relative inline-block">Silencio</span> <span className="text-[#0FB888]/50 mx-2">→</span> Urgencias
           </h3>
-          <p className="relative z-10 text-slate-400 text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-light">
-            El paciente se deteriora en silencio. La familia está sola. El asegurador paga sin verificar.
-            El hospital no sabe qué pasó. Todos operan en la oscuridad.
+          <p className="relative z-10 text-slate-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed font-light">
+            El paciente se deteriora en silencio. La familia está sola. El asegurador paga a ciegas. 
+            El hospital no sabe qué pasó. <strong className="text-white font-medium">Todos operan en la oscuridad.</strong>
           </p>
         </div>
+
       </div>
     </section>
   );
