@@ -27,7 +27,7 @@ const Ico = ({ id, className = "w-5 h-5", style }: { id: string, className?: str
   return (
     <svg 
       viewBox="0 0 24 24" 
-      className={`${className} fill-none stroke-currentColor stroke-[2]`} 
+      className={`${className} fill-none stroke-current stroke-2`} 
       style={style}
       strokeLinecap="round" 
       strokeLinejoin="round"
