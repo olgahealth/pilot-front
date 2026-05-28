@@ -20,7 +20,7 @@ const PROCESS_STEPS: ProcessStep[] = [
     id: "step-scheduling",
     number: 2,
     title: "Agendamiento inteligente",
-    desc: "OLGA conecta al paciente con el prestador adecuado según ubicación y especialidad. Aceptación vía app.",
+    desc: "olga conecta al paciente con el prestador adecuado según ubicación y especialidad. Aceptación vía app.",
   },
   {
     id: "step-execution",
@@ -38,7 +38,7 @@ const PROCESS_STEPS: ProcessStep[] = [
     id: "step-action",
     number: 5,
     title: "Acción proactiva",
-    desc: "Si hay deterioro o un servicio no se cumple, OLGA genera alertas para actuar antes de llegar a urgencias.",
+    desc: "Si hay deterioro o un servicio no se cumple, olga genera alertas para actuar antes de llegar a urgencias.",
   },
 ];
 
@@ -62,7 +62,7 @@ const SolutionSection: React.FC = () => {
             className="text-4xl md:text-5xl lg:text-6xl text-[#0A1F1A] mb-6 font-extrabold leading-[1.05] tracking-tighter"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            OLGA reemplaza el silencio con <br className="hidden md:block" />
+            olga reemplaza el silencio con <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0FB888] to-[#2BB38E]">
               coordinación en tiempo real
             </span>

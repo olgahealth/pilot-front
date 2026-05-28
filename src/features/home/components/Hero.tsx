@@ -33,20 +33,19 @@ const HERO_METRICS: Metric[] = [
 
 const OlgaHero: React.FC = () => {
   return (
-    <div id="Inicio" className="relative min-h-[100svh] bg-[#0A1F1A] overflow-hidden flex items-center">
+    <div id="Inicio" className="relative min-h-[100svh] bg-white overflow-hidden flex items-center">
       
       {/* BACKGROUND IMAGE WITH OVERLAY */}
-      {/* aria-hidden="true" - Excelente práctica de accesibilidad que ya tenías */}
       <div 
         aria-hidden="true"
         className="absolute inset-0 z-0"
       >
         <div 
           className="absolute inset-0 bg-cover bg-center transform scale-105 transition-transform duration-[20s] ease-out"
-          style={{ backgroundImage: "url('/imagenhero.jpeg')" }}
+          style={{ backgroundImage: "url('/hero.png')" }}
         />
-        {/* Overlay optimizado: Gradiente en lugar de color plano para darle profundidad al texto */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A1F1A]/95 via-[#0A1F1A]/80 to-[#0A1F1A]/40 backdrop-blur-[2px]" />
+        {/* Overlay Light */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/55 via-white/55 to-white/20 backdrop-blur-[2px]" />
       </div>
 
       {/* HERO SECTION CONTENT */}
@@ -54,46 +53,46 @@ const OlgaHero: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
-            {/* LEFT SIDE: TITLES AND SUBTITLES */}
-            <div className="lg:col-span-7 text-left">
+            {/* LEFT SIDE: MINIMALIST BRANDING */}
+            <div className="lg:col-span-7 text-left flex flex-col justify-center">
               
-              <p className="inline-block text-xs font-bold tracking-[0.2em] uppercase text-[#0FB888] mb-6 px-3 py-1 bg-[#0FB888]/10 rounded-full border border-[#0FB888]/20 backdrop-blur-sm">
-                The Operating System for Care Outside the Hospital
-              </p>
-              
-              {/* TÍTULO PRINCIPAL - Usando DM Sans para hacer match con el logo */}
-              <h1 
-                className="text-5xl md:text-6xl lg:text-[76px] font-extrabold text-white mb-8 leading-[1.05] tracking-tighter"
+              {/* Giant "olga" Heading matching the logo style */}
+
+
+              {/* Tagline / Kicker */}
+              <div className="inline-block">
+                                <p className="inline-flex text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-[#0FB888] px-5 py-2.5 bg-[#0FB888]/10 rounded-full border border-[#0FB888]/20 backdrop-blur-sm shadow-sm">
+                  The Operating System for Care Outside the Hospital
+                </p>
+                              <h1 
+                className="text-[100px] md:text-[140px] lg:text-[180px] font-extrabold tracking-tighter leading-none mb-6 text-[#0A1F1A]"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
-                Nadie sabe qué pasa con el paciente <br className="hidden md:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0FB888] to-[#2BB38E]">
-                  entre el hospital y su casa.
-                </span>
+                <span className="text-[#0FB888]">o</span>lga<span className="text-[#0FB888]">.</span>
               </h1>
-
-              <p className="max-w-xl text-lg md:text-xl text-slate-300 font-light leading-relaxed">
-                Una plataforma donde hospitales, aseguradores, prestadores y familias se ven, se conectan y coordinan — <strong className="text-white font-medium">para que el paciente nunca esté solo.</strong>
+                <p className="max-w-xl text-lg md:text-xl text-[#0A1F1A] font-light leading-relaxed">
+                Una plataforma donde hospitales, aseguradores, prestadores y familias se ven, se conectan y coordinan — <strong className="text-[#0A1F1A] font-medium">para que el paciente nunca esté solo.</strong>
               </p>
+              </div>
+
             </div>
 
             {/* RIGHT SIDE: STATS */}
             <div className="lg:col-span-5 relative mt-8 lg:mt-0">
-              {/* Resplandor de fondo para destacar la tarjeta */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#0FB888]/30 to-[#2BB38E]/30 rounded-[34px] blur-xl opacity-50"></div>
+              {/* Resplandor de fondo ajustado para modo claro */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#0FB888]/20 to-[#2BB38E]/20 rounded-[34px] blur-xl opacity-70"></div>
               
-              {/* HTML Semántico preservado (<dl>) con Glassmorphism 2.0 */}
-              <dl className="relative grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10 bg-[#0A1F1A]/40 backdrop-blur-md p-8 md:p-10 rounded-[32px] border border-white/10 shadow-2xl">
+              {/* Tarjeta de métricas con Light Glassmorphism */}
+              <dl className="relative grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10 bg-white/70 backdrop-blur-xl p-8 md:p-10 rounded-[32px] border border-white shadow-[0_20px_50px_rgba(10,31,26,0.07)]">
                 {HERO_METRICS.map((metric) => (
                   <div key={metric.id} className="flex flex-col text-left group">
                     
-                    <dt className="order-2 text-[11px] leading-relaxed uppercase tracking-wider text-slate-400 mt-2 transition-colors group-hover:text-slate-300">
+                    <dt className="order-2 text-[11px] leading-relaxed uppercase tracking-wider text-slate-500 mt-2 transition-colors group-hover:text-[#4A6B62]">
                       {metric.label}
                     </dt>
                     
-                    {/* Valores de las métricas también con DM Sans para jerarquía visual */}
                     <dd 
-                      className={`order-1 font-bold text-white transition-transform duration-300 group-hover:-translate-y-0.5 m-0 ${
+                      className={`order-1 font-extrabold text-[#0A1F1A] transition-all duration-300 group-hover:-translate-y-0.5 group-hover:text-[#0FB888] m-0 ${
                         metric.value.length > 6 ? 'text-3xl md:text-4xl' : 'text-4xl md:text-5xl'
                       }`}
                       style={{ fontFamily: "'DM Sans', sans-serif" }}
