@@ -4,11 +4,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import * as XLSX from "xlsx";
 import {
   ArrowLeft, CheckCircle, Clock, XCircle,
   AlertTriangle, Phone,
   MapPin, PenLine, AlertCircle, Circle,
-  ClipboardList, HeartPulse, TrendingUp, TrendingDown, Minus,
+  ClipboardList, HeartPulse, TrendingUp, TrendingDown, Minus, Download,
 } from "lucide-react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
@@ -123,6 +124,41 @@ export default function PacienteDetallePage({ id }: { id: number }) {
       .catch(() => setError("No se pudo cargar el paciente"))
       .finally(() => setLoading(false));
   }, [id]);
+
+  function exportarExcel() {
+    if (!data) return;
+    const wb = XLSX.utils.book_new();
+
+    const resumen = [{
+      Nombre: data.nombre, Cédula: data.cedula,
+      Diagnóstico: data.diagnostico, Riesgo: data.riesgo,
+      "Riesgo %": data.riesgo_pct, "Adherencia %": data.adherencia,
+      Tendencia: data.tendencia, Médico: data.medico, EPS: data.eps,
+      "Días post-alta": data.dias_post_alta,
+      Plan: data.plan?.nombre ?? "Sin plan",
+      "Plan descripción": data.plan?.descripcion ?? "",
+      "Costo estimado": data.plan?.costo_estimado ?? "",
+      "Médico solicitante": data.plan?.medico_solicitante ?? "",
+      Hospital: data.plan?.hospital ?? "",
+    }];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(resumen), "Paciente");
+
+    const timeline = data.timeline.map((t) => ({
+      Fecha: t.fecha, Servicio: t.servicio,
+      Profesional: t.profesional, Entidad: t.entidad ?? "",
+      Estado: t.estado, Nota: t.nota ?? "",
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(timeline.length ? timeline : [{ Fecha: "Sin visitas" }]), "Visitas");
+
+    const vitales = data.vitales.map((v) => ({
+      Fecha: v.fecha, "PA Sistólica": v.pa_sistolica ?? "",
+      "PA Diastólica": v.pa_diastolica ?? "", "FC (lpm)": v.fc ?? "",
+      "SpO2 (%)": v.spo2 ?? "", "Glucemia (mg/dL)": v.glucemia ?? "",
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(vitales.length ? vitales : [{ Fecha: "Sin registros" }]), "Signos Vitales");
+
+    XLSX.writeFile(wb, `historia_clinica_${data.cedula.replace(/\./g, "")}.xlsx`);
+  }
 
   function handleAccion(tipo: string) {
     setAccionHecha(tipo);
@@ -532,13 +568,22 @@ export default function PacienteDetallePage({ id }: { id: number }) {
       {/* Botones fijos */}
       <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200 p-4 z-40">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          <button
-            onClick={() => handleAccion("Llamada al prestador iniciada...")}
-            className="flex items-center gap-2 px-6 py-3 bg-white text-gray-700 border border-gray-300 font-bold rounded-xl hover:bg-gray-50 transition-colors shadow-sm"
-          >
-            <Phone className="w-4 h-4" />
-            Contactar prestador
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleAccion("Llamada al prestador iniciada...")}
+              className="flex items-center gap-2 px-6 py-3 bg-white text-gray-700 border border-gray-300 font-bold rounded-xl hover:bg-gray-50 transition-colors shadow-sm"
+            >
+              <Phone className="w-4 h-4" />
+              Contactar prestador
+            </button>
+            <button
+              onClick={exportarExcel}
+              className="flex items-center gap-2 px-5 py-3 bg-white text-gray-700 border border-gray-300 font-bold rounded-xl hover:bg-gray-50 transition-colors shadow-sm"
+            >
+              <Download className="w-4 h-4" />
+              Exportar Excel
+            </button>
+          </div>
           <div className="flex items-center gap-3">
             <button onClick={() => setModal("modificar")}
               className="px-8 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-colors shadow-sm">

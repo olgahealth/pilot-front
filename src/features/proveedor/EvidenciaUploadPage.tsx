@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import type SignatureCanvasType from "react-signature-canvas";
 import {
   MapPin, Camera, PenLine, FileText,
-  CheckCircle, ArrowLeft, RotateCcw, Loader2,
+  CheckCircle, ArrowLeft, RotateCcw, Loader2, Clock,
 } from "lucide-react";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,6 +35,8 @@ export default function EvidenciaUploadPage({ timelineId }: { timelineId: number
   const [gpsLoading, setGpsLoading] = useState(false);
   const [gpsError, setGpsError] = useState<string | null>(null);
   const [firmaVacia, setFirmaVacia] = useState(true);
+  const [horaLlegada, setHoraLlegada] = useState("");
+  const [horaSalida, setHoraSalida] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -57,6 +59,12 @@ export default function EvidenciaUploadPage({ timelineId }: { timelineId: number
       .catch(console.error)
       .finally(() => setLoadingInfo(false));
   }, [timelineId]);
+
+  function calcMinutos(llegada: string, salida: string): number {
+    const [lh, lm] = llegada.split(":").map(Number);
+    const [sh, sm] = salida.split(":").map(Number);
+    return Math.max(0, (sh * 60 + sm) - (lh * 60 + lm));
+  }
 
   function captureGps() {
     if (!navigator.geolocation) {
@@ -116,6 +124,9 @@ export default function EvidenciaUploadPage({ timelineId }: { timelineId: number
           firmaBase64,
           gpsLat: gps.lat,
           gpsLng: gps.lng,
+          horaLlegada: horaLlegada || undefined,
+          horaSalida: horaSalida || undefined,
+          tiempoAtencion: (horaLlegada && horaSalida) ? calcMinutos(horaLlegada, horaSalida) : undefined,
         }),
       });
       if (!res.ok) {
@@ -233,6 +244,40 @@ export default function EvidenciaUploadPage({ timelineId }: { timelineId: number
             placeholder="Describe el estado del paciente, procedimientos realizados, observaciones relevantes..."
             className="w-full text-sm border border-slate-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all"
           />
+        </div>
+
+        {/* Horas de atención */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Clock className="w-4 h-4 text-emerald-600" />
+            <h3 className="text-sm font-bold text-slate-800">Tiempo de atención</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">Hora de llegada</label>
+              <input
+                type="time"
+                value={horaLlegada}
+                onChange={(e) => setHoraLlegada(e.target.value)}
+                className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">Hora de salida</label>
+              <input
+                type="time"
+                value={horaSalida}
+                onChange={(e) => setHoraSalida(e.target.value)}
+                className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400"
+              />
+            </div>
+          </div>
+          {horaLlegada && horaSalida && calcMinutos(horaLlegada, horaSalida) > 0 && (
+            <div className="mt-3 flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 rounded-xl px-3 py-2 font-semibold">
+              <Clock className="w-4 h-4" />
+              Tiempo total: {calcMinutos(horaLlegada, horaSalida)} minutos
+            </div>
+          )}
         </div>
 
         {/* Foto */}

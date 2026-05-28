@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft, CheckCircle, AlertTriangle, Clock,
-  MapPin, User, FileText, Pen, Camera, Loader2,
+  MapPin, User, FileText, Pen, Camera, Loader2, Star,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
@@ -39,6 +39,11 @@ interface EvidenciaData {
   gpsLat: number | null;
   gpsLng: number | null;
   timestampCarga: string | null;
+  hora_llegada: string | null;
+  hora_salida: string | null;
+  tiempo_atencion: number | null;
+  calificacion: number | null;
+  comentario_paciente: string | null;
   estado: string;
 }
 
@@ -51,6 +56,10 @@ export default function EvidenciaPage({ id }: { id: number }) {
 
   const [modalIrregular, setModalIrregular] = useState(false);
   const [aprobado, setAprobado] = useState(false);
+  const [estrellaHover, setEstrellaHover] = useState(0);
+  const [calificacionLocal, setCalificacionLocal] = useState<number>(0);
+  const [comentarioLocal, setComentarioLocal] = useState("");
+  const [savingCal, setSavingCal] = useState(false);
   const [showCheck, setShowCheck] = useState(false);
   const [motivoIrregular, setMotivoIrregular] = useState("");
   const [updatingEstado, setUpdatingEstado] = useState(false);
@@ -66,6 +75,8 @@ export default function EvidenciaPage({ id }: { id: number }) {
         if (!d) { setNotFound(true); return; }
         setData(d);
         setAprobado(d.estado === "verificado");
+        if (d.calificacion) setCalificacionLocal(d.calificacion);
+        if (d.comentario_paciente) setComentarioLocal(d.comentario_paciente);
       })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
@@ -95,6 +106,27 @@ export default function EvidenciaPage({ id }: { id: number }) {
       toast.error("Error al actualizar estado");
     } finally {
       setUpdatingEstado(false);
+    }
+  }
+
+  async function guardarCalificacion() {
+    if (!data || calificacionLocal === 0) return;
+    setSavingCal(true);
+    try {
+      const token = localStorage.getItem("auth_token");
+      await fetch(`${API}/api/v1/eps/evidencia/${data.id}/calificacion`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ calificacion: calificacionLocal, comentario_paciente: comentarioLocal }),
+      });
+      setData((prev) => prev ? { ...prev, calificacion: calificacionLocal, comentario_paciente: comentarioLocal } : prev);
+      toast("⭐ Calificación guardada", {
+        style: { background: "#f59e0b", color: "#fff", fontWeight: "600", borderRadius: "10px" },
+      });
+    } catch {
+      toast.error("Error al guardar calificación");
+    } finally {
+      setSavingCal(false);
     }
   }
 
@@ -135,11 +167,11 @@ export default function EvidenciaPage({ id }: { id: number }) {
   const tieneDatos = data.notaClinica || data.firmaBase64 || tieneGps;
 
   const infoData = [
-    { icon: User,     label: "Paciente",    value: data.paciente.nombre },
-    { icon: User,     label: "Profesional", value: data.visita.profesional },
-    { icon: FileText, label: "Servicio",    value: data.visita.servicio },
-    { icon: Clock,    label: "Fecha",       value: data.visita.fecha },
-    { icon: MapPin,   label: "Entidad",     value: data.visita.entidad ?? "OLGA Servicios" },
+    { icon: User,     label: "Paciente",       value: data.paciente.nombre },
+    { icon: User,     label: "Profesional",    value: data.visita.profesional },
+    { icon: FileText, label: "Servicio",       value: data.visita.servicio },
+    { icon: Clock,    label: "Fecha",          value: data.visita.fecha },
+    { icon: MapPin,   label: "Entidad",        value: data.visita.entidad ?? "OLGA Servicios" },
   ];
 
   return (
@@ -247,6 +279,29 @@ export default function EvidenciaPage({ id }: { id: number }) {
                 </div>
               </div>
             ))}
+            {/* Horas de atención — llegada y salida en la misma fila */}
+            <div className="flex items-start gap-3">
+              <div className="w-7 h-7 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Clock className="w-3.5 h-3.5 text-gray-500" />
+              </div>
+              <div className="flex-1">
+                <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Horario de atención</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm font-semibold text-gray-800">
+                    {data.hora_llegada ?? "—"}
+                  </span>
+                  <span className="text-gray-300 text-sm">→</span>
+                  <span className="text-sm font-semibold text-gray-800">
+                    {data.hora_salida ?? "—"}
+                  </span>
+                  {data.tiempo_atencion != null && (
+                    <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      {data.tiempo_atencion} min
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className={`rounded-2xl border p-4 flex items-center gap-3 ${tieneGps ? "bg-emerald-50 border-emerald-200" : "bg-slate-50 border-slate-200"}`}>
@@ -301,6 +356,73 @@ export default function EvidenciaPage({ id }: { id: number }) {
             </div>
           )}
         </div>
+      </section>
+
+      {/* Calificación del paciente */}
+      <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <Star className="w-4 h-4 text-amber-500" />
+          <h2 className="text-sm font-bold text-gray-900">Calificación del paciente</h2>
+        </div>
+        {data.calificacion && calificacionLocal === data.calificacion ? (
+          <div className="space-y-3">
+            <div className="flex items-center gap-1">
+              {[1,2,3,4,5].map((n) => (
+                <Star key={n} className={`w-6 h-6 ${n <= data.calificacion! ? "text-amber-400 fill-amber-400" : "text-gray-200 fill-gray-200"}`} />
+              ))}
+              <span className="ml-2 text-sm font-bold text-amber-600">{data.calificacion}/5</span>
+            </div>
+            {data.comentario_paciente && (
+              <p className="text-sm text-gray-600 italic border-l-2 border-amber-200 pl-3">"{data.comentario_paciente}"</p>
+            )}
+            <button
+              onClick={() => setData((prev) => prev ? { ...prev, calificacion: null } : prev)}
+              className="text-xs text-gray-400 hover:text-gray-600 font-medium"
+            >
+              Modificar calificación
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div>
+              <p className="text-xs text-gray-500 mb-2">Seleccioná la calificación del paciente</p>
+              <div className="flex items-center gap-1">
+                {[1,2,3,4,5].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setCalificacionLocal(n)}
+                    onMouseEnter={() => setEstrellaHover(n)}
+                    onMouseLeave={() => setEstrellaHover(0)}
+                    className="transition-transform hover:scale-110"
+                  >
+                    <Star className={`w-8 h-8 transition-colors ${
+                      n <= (estrellaHover || calificacionLocal)
+                        ? "text-amber-400 fill-amber-400"
+                        : "text-gray-200 fill-gray-200"
+                    }`} />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <textarea
+              value={comentarioLocal}
+              onChange={(e) => setComentarioLocal(e.target.value)}
+              rows={2}
+              placeholder="Comentario del paciente (opcional)..."
+              className="w-full text-sm border border-gray-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
+            />
+            <button
+              type="button"
+              onClick={guardarCalificacion}
+              disabled={calificacionLocal === 0 || savingCal}
+              className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-white text-sm font-bold rounded-xl transition-colors"
+            >
+              <Star className="w-4 h-4" />
+              {savingCal ? "Guardando..." : "Guardar calificación"}
+            </button>
+          </div>
+        )}
       </section>
 
       {/* Foto de evidencia */}
