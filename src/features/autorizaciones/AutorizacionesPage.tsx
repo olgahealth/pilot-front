@@ -57,6 +57,10 @@ export default function AutorizacionesPage() {
   const [adjuntos, setAdjuntos] = useState<File[]>([]);
   const [intentoEnvio, setIntentoEnvio] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [condicionando, setCondicionando] = useState<{ id: number } | null>(null);
+  const [condiciones, setCondiciones] = useState("");
+  const [valorAutorizado, setValorAutorizado] = useState("");
+  const [intentoEnvioCondiciones, setIntentoEnvioCondiciones] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
@@ -89,9 +93,38 @@ export default function AutorizacionesPage() {
   const pendientes = Object.values(estados).filter((e) => e === "pendiente").length;
 
   function handleAccion(id: number, accion: EstadoSolicitud) {
-    if (accion === "aprobado") { setConfirming({ id, accion }); return; }
-    if (accion === "negado")   { setNegando({ id }); return; }
+    if (accion === "aprobado")             { setConfirming({ id, accion }); return; }
+    if (accion === "negado")               { setNegando({ id }); return; }
+    if (accion === "aprobado_condiciones") { setCondicionando({ id }); return; }
     aplicarAccion(id, accion);
+  }
+
+  function cerrarModalCondiciones() {
+    setCondicionando(null);
+    setCondiciones("");
+    setValorAutorizado("");
+    setIntentoEnvioCondiciones(false);
+  }
+
+  function confirmarCondiciones() {
+    setIntentoEnvioCondiciones(true);
+    if (!condicionando || condiciones.trim().length < 10) return;
+    const id = condicionando.id;
+    setEstados((prev) => ({ ...prev, [id]: "aprobado_condiciones" }));
+    cerrarModalCondiciones();
+    const token = localStorage.getItem("auth_token");
+    fetch(`${API}/api/v1/eps/solicitudes/${id}/estado`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, Accept: "application/json" },
+      body: JSON.stringify({
+        estado: "aprobado_condiciones",
+        condiciones: condiciones.trim(),
+        valor_autorizado: valorAutorizado ? Number(valorAutorizado.replace(/\D/g, "")) : undefined,
+      }),
+    }).catch(() => {});
+    toast("Aprobado con condiciones", {
+      style: { background: "#D97706", color: "#fff", fontWeight: "600", borderRadius: "10px" },
+    });
   }
 
   function cerrarModalNegacion() {
@@ -572,6 +605,104 @@ export default function AutorizacionesPage() {
                 >
                   <XCircle className="w-4 h-4" />
                   Negar solicitud
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Modal de condiciones ── */}
+      <AnimatePresence>
+        {condicionando && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={cerrarModalCondiciones}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                  <AlertCircle className="w-6 h-6 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900">Especificar condiciones</h3>
+                  <p className="text-xs text-gray-500">Esta acción quedará registrada en el sistema</p>
+                </div>
+              </div>
+
+              {/* Resumen del paciente */}
+              {(() => {
+                const sol = solicitudes.find((s) => s.id === condicionando.id);
+                return sol ? (
+                  <div className="bg-gray-50 rounded-xl p-4 mb-5 space-y-1.5">
+                    <p className="text-sm font-semibold text-gray-900">{sol.paciente}</p>
+                    <p className="text-xs text-gray-500"><span className="font-semibold text-gray-700">{sol.plan_nombre}</span> · {sol.plan_propuesto}</p>
+                    <p className="text-sm font-bold text-amber-700">{formatCOP(sol.costo_estimado)} / mes <span className="text-xs font-normal text-gray-400">(valor solicitado)</span></p>
+                  </div>
+                ) : null;
+              })()}
+
+              {/* Textarea condiciones */}
+              <div className="mb-4">
+                <label className="block text-xs font-bold text-gray-700 mb-1.5">
+                  Condiciones de aprobación <span className="text-amber-500">*</span>
+                </label>
+                <textarea
+                  value={condiciones}
+                  onChange={(e) => setCondiciones(e.target.value)}
+                  rows={4}
+                  placeholder="Ej: Se autoriza 3 visitas/sem en lugar de 5. Requiere reevaluación médica al mes 2. Costo máximo autorizado $2.500.000/mes..."
+                  className={`w-full text-sm border rounded-xl px-3 py-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 transition-colors ${
+                    intentoEnvioCondiciones && condiciones.trim().length < 10
+                      ? "border-amber-400 bg-amber-50"
+                      : "border-gray-200"
+                  }`}
+                />
+                {intentoEnvioCondiciones && condiciones.trim().length < 10 && (
+                  <p className="text-xs text-amber-600 mt-1">Las condiciones deben tener al menos 10 caracteres.</p>
+                )}
+              </div>
+
+              {/* Valor autorizado (opcional) */}
+              <div className="mb-6">
+                <label className="block text-xs font-bold text-gray-700 mb-1.5">
+                  Valor autorizado / mes <span className="text-gray-400 font-normal">(opcional — dejar vacío para mantener el solicitado)</span>
+                </label>
+                <input
+                  type="text"
+                  value={valorAutorizado}
+                  onChange={(e) => setValorAutorizado(e.target.value)}
+                  placeholder="$ 0"
+                  className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
+                />
+              </div>
+
+              {/* Botones */}
+              <div className="flex gap-3">
+                <button
+                  onClick={cerrarModalCondiciones}
+                  className="flex-1 py-2.5 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+                >
+                  Cancelar
+                </button>
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
+                  onClick={confirmarCondiciones}
+                  className="flex-1 py-2.5 text-sm font-bold text-white bg-amber-500 hover:bg-amber-600 rounded-xl transition-colors flex items-center justify-center gap-2"
+                >
+                  <AlertCircle className="w-4 h-4" />
+                  Aprobar con condiciones
                 </motion.button>
               </div>
             </motion.div>

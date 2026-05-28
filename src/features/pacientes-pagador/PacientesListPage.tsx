@@ -25,6 +25,7 @@ type PacientePagador = {
   cedula: string;
   diagnostico: string;
   dias_post_alta: number;
+  edad?: number | null;
   riesgo: Riesgo;
   riesgo_pct: number;
   adherencia: number;
@@ -256,7 +257,11 @@ export default function PacientesListPage() {
                     <td className="px-6 py-4 text-[11px] text-slate-400 font-bold">{globalIdx.toString().padStart(2, '0')}</td>
                     <td className="px-4 py-4">
                       <p className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors uppercase tracking-tight">{p.nombre}</p>
-                      <p className="text-[10px] font-medium text-slate-400 tracking-widest">{p.cedula}</p>
+                      <p className="text-[10px] font-medium text-slate-400 tracking-widest">
+                        {p.cedula}
+                        {p.edad != null && <span className="text-slate-300"> · </span>}
+                        {p.edad != null && <span className="text-slate-500">{p.edad} años</span>}
+                      </p>
                     </td>
                     <td className="px-4 py-4">
                       <p className="text-[11px] font-medium text-slate-600 leading-relaxed max-w-[200px] italic">
