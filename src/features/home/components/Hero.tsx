@@ -81,7 +81,7 @@ const OlgaHero: React.FC = () => {
               <div className="absolute -inset-1 bg-gradient-to-r from-[#0FB888]/20 to-[#2BB38E]/20 rounded-[34px] blur-xl opacity-70"></div>
               
               {/* Tarjeta de métricas con Light Glassmorphism */}
-              <dl className="relative grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10 bg-white/70 backdrop-blur-xl p-8 md:p-10 rounded-[32px] border border-white shadow-[0_20px_50px_rgba(10,31,26,0.07)]">
+              <dl className="relative grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10 bg-[#a8f0d8]/60 backdrop-blur-xl p-8 md:p-10 rounded-[32px] border border-[#7de0c0]/40 shadow-[0_20px_50px_rgba(10,31,26,0.07)]">
                 {HERO_METRICS.map((metric) => (
                   <div key={metric.id} className="flex flex-col text-left group">
                     
