@@ -47,34 +47,12 @@ const OlgaHero: React.FC = () => {
       </div>
 
       {/* HERO SECTION CONTENT */}
-      <section className="relative z-10 w-full pt-32 pb-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+      <section className="relative z-10 w-full min-h-[calc(100vh-72px)] flex items-center px-6 py-16">
+        <div className="max-w-7xl mx-auto w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
-            {/* NAV VERTICAL IZQUIERDA */}
-            <div className="hidden lg:flex lg:col-span-1 flex-col items-center justify-center gap-6 h-full">
-              {[
-                { label: 'Inicio',       href: '#Inicio' },
-                { label: 'Problema',     href: '#problem' },
-                { label: 'Solución',     href: '#solution' },
-                { label: 'Plataforma',   href: '#platform' },
-                { label: 'Capacidades',  href: '#features' },
-                { label: 'Fase 2',       href: '#future' },
-                { label: 'Contacto',     href: '#contact' },
-              ].map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-                  className="text-[11px] font-semibold tracking-[0.15em] uppercase text-slate-400 hover:text-[#0FB888] transition-colors duration-200"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-
-            {/* CENTER: BRANDING */}
-            <div className="lg:col-span-6 text-left flex flex-col justify-center">
+            {/* LEFT: BRANDING */}
+            <div className="text-left flex flex-col justify-center">
               
               {/* Giant "olga" Heading matching the logo style */}
 
@@ -85,7 +63,7 @@ const OlgaHero: React.FC = () => {
                   The Operating System for Care Outside the Hospital
                 </p>
                               <h1 
-                className="text-[100px] md:text-[140px] lg:text-[180px] font-extrabold tracking-tighter leading-none mb-6 text-[#0A1F1A]"
+                className="text-[80px] md:text-[110px] lg:text-[140px] font-extrabold tracking-tighter leading-none mb-6 text-[#0A1F1A]"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 <span className="text-[#0FB888]">o</span>lga<span className="text-[#0FB888]">.</span>
@@ -97,8 +75,8 @@ const OlgaHero: React.FC = () => {
 
             </div>
 
-            {/* RIGHT SIDE: STATS */}
-            <div className="lg:col-span-5 relative mt-8 lg:mt-0 lg:col-start-8">
+            {/* RIGHT: STATS */}
+            <div className="relative mt-8 lg:mt-0">
               {/* Resplandor de fondo ajustado para modo claro */}
               <div className="absolute -inset-1 bg-gradient-to-r from-[#0FB888]/20 to-[#2BB38E]/20 rounded-[34px] blur-xl opacity-70"></div>
               
