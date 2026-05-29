@@ -114,10 +114,8 @@ const OlgaHero: React.FC = () => {
                 ))}
               </div>
 
-              {/* Bohu — guía de visibilidad clínica */}
+              {/* Bohu — guía de visibilidad clínica (comentado temporalmente)
               <div className="flex justify-end items-end gap-4 mt-2">
-
-                {/* Burbuja de diálogo */}
                 <AnimatePresence>
                   {showBubble && (
                     <motion.div
@@ -133,7 +131,6 @@ const OlgaHero: React.FC = () => {
                         </p>
                         <p className="text-[10px] text-slate-400 mt-1 font-medium">— Bohu, guía clínica</p>
                       </div>
-                      {/* Flecha hacia Bohu */}
                       <div
                         className="absolute -bottom-2 right-6 w-4 h-4 bg-white border-b border-r border-[#0FB888]/30 rotate-45"
                         style={{ boxShadow: '2px 2px 4px rgba(15,184,136,0.08)' }}
@@ -141,8 +138,6 @@ const OlgaHero: React.FC = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-
-                {/* Búho interactivo */}
                 <button
                   onClick={() => setShowBubble((v) => !v)}
                   onMouseEnter={() => setShowBubble(true)}
@@ -159,6 +154,7 @@ const OlgaHero: React.FC = () => {
                   />
                 </button>
               </div>
+              */}
 
             </div>
 
