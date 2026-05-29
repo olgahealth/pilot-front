@@ -21,7 +21,7 @@ const HERO_METRICS = [
   { id: 'metric-1', value: 'USD 14.5B', label: 'en cuidado domiciliario pagados sin verificación electrónica en NY en un año' },
   { id: 'metric-2', value: '10%',       label: 'de pacientes reingresan al hospital dentro de los 30 días post-alta en Colombia' },
   { id: 'metric-3', value: '$2,500',    label: 'USD costo promedio por evento prevenible' },
-  { id: 'metric-4', value: '0',         label: 'plataformas que integren todo el ecosistema en LATAM' },
+  { id: 'metric-4', value: '0',          label: 'plataformas que integren todo el ecosistema en LATAM' },
 ];
 
 const cardVariants = {
@@ -38,7 +38,7 @@ function MetricsGrid() {
   return (
     <div className="flex flex-col gap-5 relative" ref={ref}>
       <motion.p
-        className="text-xs font-bold uppercase tracking-[0.15em] text-slate-400"
+        className="text-xs font-bold uppercase tracking-[0.15em] text-slate-500"
         initial={{ opacity: 0 }}
         animate={inView ? { opacity: 1 } : {}}
         transition={{ duration: 0.4 }}
@@ -65,7 +65,7 @@ function MetricsGrid() {
             >
               {m.value}
             </span>
-            <span className="text-[11px] uppercase tracking-wider text-slate-500 leading-snug">
+            <span className="text-[11px] uppercase tracking-wider text-slate-600 leading-snug">
               {m.label}
             </span>
           </motion.div>
@@ -79,7 +79,7 @@ const OlgaHero: React.FC = () => {
   const [showBubble, setShowBubble] = useState(false);
 
   return (
-    <div id="inicio" className="relative bg-white overflow-hidden">
+    <div id="inicio" className="relative overflow-hidden" style={{ backgroundColor: '#F8FAFC' }}>
 
       {/* Keyframe flotación */}
       <style>{`
@@ -88,14 +88,6 @@ const OlgaHero: React.FC = () => {
           50%       { transform: translateY(-10px); }
         }
       `}</style>
-
-      {/* Fondo gradiente */}
-      <div aria-hidden="true" className="absolute inset-0 z-0">
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(135deg, #ffffff 0%, #ffffff 65%, #cffff0 100%)" }}
-        />
-      </div>
 
       <section className="relative z-10 w-full pt-20 md:pt-24 pb-14 md:pb-20 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
@@ -126,7 +118,7 @@ const OlgaHero: React.FC = () => {
               </p>
 
               {/* Body */}
-              <p className="text-lg text-slate-500 leading-relaxed font-light max-w-[560px]">
+              <p className="text-lg text-slate-700 leading-relaxed font-light max-w-[560px]">
                 Hospitales, aseguradores, prestadores y familias coordinan cada visita, autorización y alerta en un solo flujo de trabajo — para que ningún paciente se pierda después del alta.
               </p>
 
@@ -147,8 +139,22 @@ const OlgaHero: React.FC = () => {
               </div>
             </div>
 
-            {/* ── DERECHA ── */}
-            <MetricsGrid />
+            {/* ── DERECHA (Métricas + Video) ── */}
+            <div className="flex flex-col gap-8 w-full">
+              <MetricsGrid />
+              
+              {/* Contenedor del Video */}
+              <div className="w-full rounded-[20px] md:rounded-[28px] overflow-hidden shadow-lg border border-slate-300/50 ready-to-play">
+<video 
+  className="w-full h-auto bg-transparent mix-blend-multiply"
+  src="/videos/olgavideo.mp4"
+  loop
+  controls
+  playsInline
+  style={{ backgroundColor: 'transparent' }}
+/>
+              </div>
+            </div>
 
             {/* Bohu — guía de visibilidad clínica (comentado temporalmente)
             <div className="flex justify-end items-end gap-4 mt-2">
