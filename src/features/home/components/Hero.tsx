@@ -31,7 +31,7 @@ const OlgaHero: React.FC = () => {
 
               {/* Pill */}
               <span className="inline-flex w-fit text-[11px] font-bold tracking-[0.18em] uppercase text-[#0FB888] px-4 py-2 bg-[#0FB888]/10 rounded-full border border-[#0FB888]/20">
-                The Operating System for Care Outside the Hospital
+                El sistema operativo del cuidado domiciliario
               </span>
 
               {/* Logo */}
@@ -47,12 +47,12 @@ const OlgaHero: React.FC = () => {
                 className="text-2xl md:text-3xl font-semibold text-[#0A1F1A] leading-tight tracking-tight -mt-2"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
-                Care outside the hospital,<br className="hidden md:block" /> finally traceable.
+                El paciente no desaparece<br className="hidden md:block" /> cuando sale del hospital.
               </p>
 
               {/* Body */}
               <p className="text-lg text-slate-500 leading-relaxed font-light max-w-[560px]">
-                Hospitals, insurers, providers and families coordinate every visit, authorization and alert in one shared workflow — so every patient stays traceable after discharge.
+                Hospitales, aseguradores, prestadores y familias coordinan cada visita, autorización y alerta en un solo flujo de trabajo — para que ningún paciente se pierda después del alta.
               </p>
 
               {/* CTAs */}
@@ -77,7 +77,7 @@ const OlgaHero: React.FC = () => {
 
               {/* Label */}
               <p className="text-xs font-bold uppercase tracking-[0.15em] text-slate-400">
-                The hidden cost of disconnected care
+                El costo oculto de la atención desconectada
               </p>
 
               {/* 4 metric cards */}
