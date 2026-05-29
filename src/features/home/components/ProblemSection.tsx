@@ -61,7 +61,7 @@ const ProblemSection = () => {
             <article
               key={index}
               // Hacemos que el 1er y 4to elemento ocupen 2 columnas en Desktop para un look "Bento Grid"
-              className={`group relative overflow-hidden rounded-[32px] bg-[#0A1F1A] shadow-lg flex flex-col justify-end min-h-[340px] md:min-h-[380px] ${
+              className={`group relative overflow-hidden rounded-[32px] bg-[#0A1F1A] shadow-md flex flex-col justify-end min-h-[340px] md:min-h-[380px] ${
                 index === 0 || index === 3 ? 'md:col-span-2 lg:col-span-2' : 'col-span-1'
               }`}
             >
@@ -75,7 +75,7 @@ const ProblemSection = () => {
               />
               
               {/* Gradiente Overlay para legibilidad (Oscurece al hacer hover) */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A1F1A] via-[#0A1F1A]/60 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-100" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A1F1A] via-[#0A1F1A]/40 to-transparent opacity-65 transition-opacity duration-500 group-hover:opacity-80" />
               
               {/* Contenido (Texto) */}
               <div className="relative z-10 p-8 md:p-10 transform transition-transform duration-500 translate-y-2 group-hover:translate-y-0">
@@ -85,7 +85,7 @@ const ProblemSection = () => {
                 >
                   {prob.title}
                 </h4>
-                <p className="text-slate-300/90 text-sm md:text-base leading-relaxed font-light line-clamp-3">
+                <p className="text-slate-200 text-base md:text-lg leading-relaxed font-light">
                   {prob.desc}
                 </p>
               </div>
