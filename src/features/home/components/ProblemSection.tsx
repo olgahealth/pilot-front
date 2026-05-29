@@ -16,7 +16,7 @@ const ProblemSection = () => {
     {
       title: 'Cuadros de turnos',
       desc: 'La programación de visitas vive en hojas de cálculo estáticas que nadie más puede ver en tiempo real.',
-      img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800'
+      img: '/Cuadros de turnos.webp'
     },
     {
       title: 'Llamadas sin registro',
