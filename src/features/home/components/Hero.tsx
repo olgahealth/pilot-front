@@ -1,4 +1,7 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const HERO_METRICS = [
   { id: 'metric-1', value: 'USD 14.5B', label: 'en cuidado domiciliario pagados sin verificación electrónica en NY en un año' },
@@ -8,8 +11,18 @@ const HERO_METRICS = [
 ];
 
 const OlgaHero: React.FC = () => {
+  const [showBubble, setShowBubble] = useState(false);
+
   return (
     <div id="inicio" className="relative bg-white overflow-hidden">
+
+      {/* Keyframe flotación */}
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50%       { transform: translateY(-10px); }
+        }
+      `}</style>
 
       {/* Fondo gradiente */}
       <div aria-hidden="true" className="absolute inset-0 z-0">
@@ -101,14 +114,52 @@ const OlgaHero: React.FC = () => {
                 ))}
               </div>
 
-              {/* Mascota */}
-              <div className="flex justify-end -mt-2 pr-2">
-                <img
-                  src="/buhoolga-Photoroom.png"
-                  alt="Olga mascot"
-                  className="w-20 h-20 object-contain opacity-90"
-                />
+              {/* Bohu — guía de visibilidad clínica */}
+              <div className="flex justify-end items-end gap-4 mt-2">
+
+                {/* Burbuja de diálogo */}
+                <AnimatePresence>
+                  {showBubble && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 6, scale: 0.95 }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
+                      className="relative mb-2"
+                    >
+                      <div className="bg-white border border-[#0FB888]/30 rounded-2xl shadow-xl px-5 py-3 max-w-[220px]">
+                        <p className="text-sm font-semibold text-[#0A1F1A] leading-snug">
+                          "Hago visible el cuidado fuera del hospital."
+                        </p>
+                        <p className="text-[10px] text-slate-400 mt-1 font-medium">— Bohu, guía clínica</p>
+                      </div>
+                      {/* Flecha hacia Bohu */}
+                      <div
+                        className="absolute -bottom-2 right-6 w-4 h-4 bg-white border-b border-r border-[#0FB888]/30 rotate-45"
+                        style={{ boxShadow: '2px 2px 4px rgba(15,184,136,0.08)' }}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Búho interactivo */}
+                <button
+                  onClick={() => setShowBubble((v) => !v)}
+                  onMouseEnter={() => setShowBubble(true)}
+                  onMouseLeave={() => setShowBubble(false)}
+                  className="cursor-pointer focus:outline-none flex-shrink-0"
+                  aria-label="Bohu — guía de visibilidad clínica de OLGA"
+                  title="Bohu — guía de visibilidad clínica"
+                >
+                  <img
+                    src="/buhoolga-Photoroom.png"
+                    alt="Bohu, guía de visibilidad clínica de OLGA"
+                    className="w-32 h-32 object-contain drop-shadow-md"
+                    style={{ animation: 'float 3s ease-in-out infinite' }}
+                  />
+                </button>
               </div>
+
             </div>
 
           </div>
