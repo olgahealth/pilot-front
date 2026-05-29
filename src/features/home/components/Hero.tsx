@@ -1,104 +1,114 @@
 import React from 'react';
 
-// 1. Contratos claros.
-interface Metric {
-  id: string;
-  value: string;
-  label: string;
-}
-
-// 2. Datos estáticos fuera del componente para evitar re-renders innecesarios.
-const HERO_METRICS: Metric[] = [
-  {
-    id: 'metric-preventable-er',
-    value: 'USD 14.5B',
-    label: 'en cuidado domiciliario pagados sin verificación electrónica en NY en un año'
-  },
-  {
-    id: 'metric-unmonitored',
-    value: '10%',
-    label: 'de pacientes reingresan al hospital dentro de los 30 días post-alta en Colombia'
-  },
-  { 
-    id: 'metric-cost', 
-    value: '$2,500', 
-    label: 'USD costo promedio por evento prevenible' 
-  },
-  { 
-    id: 'metric-integration', 
-    value: '0', 
-    label: 'plataformas que integren todo el ecosistema en LATAM' 
-  },
+const HERO_METRICS = [
+  { id: 'metric-1', value: 'USD 14.5B', label: 'en cuidado domiciliario pagados sin verificación electrónica en NY en un año' },
+  { id: 'metric-2', value: '10%',       label: 'de pacientes reingresan al hospital dentro de los 30 días post-alta en Colombia' },
+  { id: 'metric-3', value: '$2,500',    label: 'USD costo promedio por evento prevenible' },
+  { id: 'metric-4', value: '0',         label: 'plataformas que integren todo el ecosistema en LATAM' },
 ];
 
 const OlgaHero: React.FC = () => {
   return (
-    <div id="inicio" className="relative min-h-[100svh] bg-white overflow-hidden flex items-center">
-      
-      {/* BACKGROUND IMAGE WITH OVERLAY */}
-      <div 
-        aria-hidden="true"
-        className="absolute inset-0 z-0"
-      >
+    <div id="inicio" className="relative bg-white overflow-hidden">
+
+      {/* Fondo gradiente */}
+      <div aria-hidden="true" className="absolute inset-0 z-0">
         <div
           className="absolute inset-0"
           style={{ background: "linear-gradient(135deg, #ffffff 0%, #ffffff 65%, #cffff0 100%)" }}
         />
       </div>
 
-      {/* HERO SECTION CONTENT */}
-      <section className="relative z-10 w-full min-h-[calc(100vh-72px)] flex items-center px-6 py-16">
-        <div className="max-w-7xl mx-auto w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <section className="relative z-10 w-full pt-24 pb-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div
+            className="grid grid-cols-1 lg:grid-cols-2 items-center gap-16 lg:gap-20"
+            style={{ gridTemplateColumns: '1fr 0.9fr' }}
+          >
 
-            {/* LEFT: BRANDING */}
-            <div className="text-left flex flex-col justify-center">
-              
-              {/* Giant "olga" Heading matching the logo style */}
+            {/* ── IZQUIERDA ── */}
+            <div className="flex flex-col gap-6 max-w-[640px]">
 
+              {/* Pill */}
+              <span className="inline-flex w-fit text-[11px] font-bold tracking-[0.18em] uppercase text-[#0FB888] px-4 py-2 bg-[#0FB888]/10 rounded-full border border-[#0FB888]/20">
+                The Operating System for Care Outside the Hospital
+              </span>
 
-              {/* Tagline / Kicker */}
-              <div className="inline-block">
-                                <p className="inline-flex text-xs md:text-sm font-bold tracking-[0.2em] uppercase text-[#0FB888] px-5 py-2.5 bg-[#0FB888]/10 rounded-full border border-[#0FB888]/20 backdrop-blur-sm shadow-sm">
-                  The Operating System for Care Outside the Hospital
-                </p>
-                              <h1 
-                className="text-[80px] md:text-[110px] lg:text-[140px] font-extrabold tracking-tighter leading-none mb-6 text-[#0A1F1A]"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              {/* Logo */}
+              <h1
+                className="font-extrabold tracking-tighter leading-[0.9] text-[#0A1F1A]"
+                style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 'clamp(80px, 10vw, 148px)' }}
               >
                 <span className="text-[#0FB888]">o</span>lga<span className="text-[#0FB888]">.</span>
               </h1>
-                <p className="max-w-xl text-lg md:text-xl text-[#0A1F1A] font-light leading-relaxed">
-                Una plataforma donde hospitales, aseguradores, prestadores y familias se ven, se conectan y coordinan — <strong className="text-[#0A1F1A] font-medium">para que el paciente nunca esté solo.</strong>
-              </p>
-              </div>
 
+              {/* Headline */}
+              <p
+                className="text-2xl md:text-3xl font-semibold text-[#0A1F1A] leading-tight tracking-tight -mt-2"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                Care outside the hospital,<br className="hidden md:block" /> finally traceable.
+              </p>
+
+              {/* Body */}
+              <p className="text-lg text-slate-500 leading-relaxed font-light max-w-[560px]">
+                Hospitals, insurers, providers and families coordinate every visit, authorization and alert in one shared workflow — so every patient stays traceable after discharge.
+              </p>
+
+              {/* CTAs */}
+              <div className="flex flex-wrap gap-4 pt-2">
+                <a
+                  href="#contact"
+                  className="inline-flex items-center gap-2 bg-[#0FB888] text-white font-bold text-sm px-7 py-3.5 rounded-full shadow-lg shadow-[#0FB888]/25 hover:bg-[#0AA577] hover:-translate-y-0.5 transition-all duration-200"
+                >
+                  Solicitar demo
+                </a>
+                <a
+                  href="#platform"
+                  className="inline-flex items-center gap-2 bg-white text-[#0A1F1A] font-semibold text-sm px-7 py-3.5 rounded-full border border-slate-200 hover:border-[#0FB888]/40 hover:text-[#0FB888] transition-all duration-200"
+                >
+                  Ver plataforma →
+                </a>
+              </div>
             </div>
 
-            {/* RIGHT: STATS */}
-            <div className="relative mt-8 lg:mt-0">
-              {/* Resplandor de fondo ajustado para modo claro */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#0FB888]/20 to-[#2BB38E]/20 rounded-[34px] blur-xl opacity-70"></div>
-              
-              {/* Tarjeta de métricas con Light Glassmorphism */}
-              <dl className="relative grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10 bg-[#a8f0d8]/60 backdrop-blur-xl p-8 md:p-10 rounded-[32px] border border-[#7de0c0]/40 shadow-[0_20px_50px_rgba(10,31,26,0.07)]">
-                {HERO_METRICS.map((metric) => (
-                  <div key={metric.id} className="flex flex-col text-center group">
+            {/* ── DERECHA ── */}
+            <div className="flex flex-col gap-5 relative">
 
-                    <dt className="order-2 text-[11px] leading-relaxed uppercase tracking-wider text-slate-500 mt-2 transition-colors group-hover:text-[#4A6B62]">
-                      {metric.label}
-                    </dt>
+              {/* Label */}
+              <p className="text-xs font-bold uppercase tracking-[0.15em] text-slate-400">
+                The hidden cost of disconnected care
+              </p>
 
-                    <dd
-                      className="order-1 text-4xl md:text-5xl font-extrabold text-[#0A1F1A] transition-all duration-300 group-hover:-translate-y-0.5 group-hover:text-[#0FB888] m-0"
+              {/* 4 metric cards */}
+              <div className="grid grid-cols-2 gap-[18px]">
+                {HERO_METRICS.map((m) => (
+                  <div
+                    key={m.id}
+                    className="flex flex-col gap-2 rounded-[28px] p-8 border border-[#0FB888]/18 bg-[#cffff0]/70 backdrop-blur-sm"
+                    style={{ boxShadow: '0 24px 70px rgba(15,184,136,0.13)' }}
+                  >
+                    <span
+                      className="text-4xl md:text-5xl font-extrabold text-[#0A1F1A] leading-none"
                       style={{ fontFamily: "'DM Sans', sans-serif" }}
                     >
-                      {metric.value}
-                    </dd>
-                    
+                      {m.value}
+                    </span>
+                    <span className="text-[11px] uppercase tracking-wider text-slate-500 leading-snug">
+                      {m.label}
+                    </span>
                   </div>
                 ))}
-              </dl>
+              </div>
+
+              {/* Mascota */}
+              <div className="flex justify-end -mt-2 pr-2">
+                <img
+                  src="/buhoolga-Photoroom.png"
+                  alt="Olga mascot"
+                  className="w-20 h-20 object-contain opacity-90"
+                />
+              </div>
             </div>
 
           </div>
