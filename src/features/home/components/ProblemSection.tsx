@@ -3,35 +3,35 @@ import React from 'react';
 const ProblemSection = () => {
   // Datos actualizados con URLs de imágenes (usando Unsplash como placeholders de alta calidad)
   const problems = [
-    { 
-      title: 'Correos electrónicos',      
+    {
+      title: 'Correos electrónicos',
       desc: 'Solicitudes de autorización, aceptaciones, y reportes que llegan días después — si es que llegan.',
-      img: 'https://images.unsplash.com/photo-1587614382346-4ec70e388b28?auto=format&fit=crop&q=80&w=1000'
+      img: '/Correos electrónicos.webp'
     },
-    { 
-      title: 'Grupos de WhatsApp',        
+    {
+      title: 'Grupos de WhatsApp',
       desc: 'Auditores, coordinadores y prestadores intercambian información crítica en chats que se pierden.',
-      img: 'https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&q=80&w=800'
+      img: '/Grupos de WhatsApp.webp'
     },
-    { 
-      title: 'Cuadros de turnos', 
+    {
+      title: 'Cuadros de turnos',
       desc: 'La programación de visitas vive en hojas de cálculo estáticas que nadie más puede ver en tiempo real.',
       img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800'
     },
-    { 
-      title: 'Llamadas sin registro',     
+    {
+      title: 'Llamadas sin registro',
       desc: 'Coordinaciones telefónicas que no quedan documentadas. Si alguien pregunta qué pasó, nadie tiene el dato.',
-      img: 'https://images.unsplash.com/photo-1596265371388-43edbaadab94?auto=format&fit=crop&q=80&w=1000'
+      img: '/Llamadas sin registro.webp'
     },
-    { 
-      title: 'Visitas fantasma',          
+    {
+      title: 'Visitas fantasma',
       desc: 'Servicios que se reportan como prestados pero nadie verifica si el profesional realmente llegó al domicilio.',
-      img: 'https://images.unsplash.com/photo-1584516150909-c43483ee7932?auto=format&fit=crop&q=80&w=800'
+      img: '/Visitas fantasma.webp'
     },
-    { 
-      title: 'Pérdida de trazabilidad',   
+    {
+      title: 'Pérdida de trazabilidad',
       desc: 'El paciente desaparece del radar clínico. Nadie sabe si mejoró, empeoró, o necesita intervención urgente.',
-      img: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&q=80&w=800'
+      img: '/Pérdida de trazabilidad.webp'
     },
   ];
 
