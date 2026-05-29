@@ -90,50 +90,14 @@ const OlgaPlatform = () => {
           </div>
 
           <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 items-start">
-            {/* UI Mockup */}
-            <div className="lg:col-span-7 bg-[#0A1F1A] rounded-[2.5rem] p-8 border border-slate-800 shadow-[0_20px_50px_rgba(10,31,26,0.3)] relative">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#0FB888]/10 rounded-full blur-[60px] pointer-events-none" />
-              
-              <div className="flex gap-2 mb-8 opacity-30">
-                <div className="w-2.5 h-2.5 rounded-full bg-white" /><div className="w-2.5 h-2.5 rounded-full bg-white" /><div className="w-2.5 h-2.5 rounded-full bg-white" />
+            {/* Screenshot real */}
+            <div className="lg:col-span-7 rounded-[2rem] overflow-hidden border border-slate-200 shadow-[0_20px_60px_rgba(10,31,26,0.12)]">
+              <div className="flex items-center gap-1.5 px-4 py-3 bg-slate-100 border-b border-slate-200">
+                <span className="w-3 h-3 rounded-full bg-red-400/70" />
+                <span className="w-3 h-3 rounded-full bg-yellow-400/70" />
+                <span className="w-3 h-3 rounded-full bg-emerald-400/70" />
               </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 relative z-10">
-                {[
-                  { label: 'Verificados hoy', val: '142', sub: 'servicios confirmados', color: 'text-[#0FB888]', bg: 'bg-[#0FB888]', progress: '94%' },
-                  { label: 'Alertas fraude', val: '3', sub: 'flagged para revisión', color: 'text-red-400', bg: 'bg-red-400', progress: '12%' },
-                  { label: 'Urgencias evitadas', val: '28', sub: 'este mes', color: 'text-teal-300', bg: 'bg-teal-300', progress: '72%' },
-                  { label: 'Ahorro (COP)', val: '$86M', sub: 'este trimestre', color: 'text-orange-300', bg: 'bg-orange-300', progress: '68%' }
-                ].map((stat, i) => (
-                  <div key={i} className="bg-white/5 backdrop-blur-sm p-5 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors">
-                    <div className={`${stat.color} text-[10px] font-black uppercase mb-2 tracking-wider`}>{stat.label}</div>
-                    <div className="text-3xl font-bold text-white mb-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>{stat.val}</div>
-                    <div className="text-[10px] text-white/40 leading-tight h-6">{stat.sub}</div>
-                    <div className="h-1 bg-white/10 rounded-full mt-2 overflow-hidden"><div className={`h-full ${stat.bg}`} style={{ width: stat.progress }} /></div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-4 relative z-10">
-                <div className="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10">
-                  <div className="text-white/40 text-[10px] font-black uppercase mb-4 tracking-widest">Mapa de verificación GPS</div>
-                  <div className="h-24 bg-black/20 rounded-xl flex items-center justify-center gap-8 border border-white/5 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(15,184,136,0.1)_0,transparent_70%)]" />
-                    <div className="w-3 h-3 rounded-full bg-[#0FB888] shadow-[0_0_12px_rgba(15,184,136,0.8)] relative z-10 animate-pulse" />
-                    <div className="w-3 h-3 rounded-full bg-[#0FB888] shadow-[0_0_12px_rgba(15,184,136,0.8)] relative z-10" />
-                    <div className="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.8)] relative z-10" />
-                  </div>
-                </div>
-                <div className="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/10">
-                  <div className="text-white/40 text-[10px] font-black uppercase mb-4 tracking-widest">Facturación</div>
-                  <ul className="text-xs text-white/80 space-y-3 font-light">
-                    <li className="flex items-center gap-3"><span className="w-2 h-2 rounded-full bg-[#0FB888] shadow-[0_0_8px_#0FB888]"/> 142 listos para facturar</li>
-                    <li className="flex items-center gap-3"><span className="w-2 h-2 rounded-full bg-yellow-400"/> 8 pendientes firma</li>
-                    <li className="flex items-center gap-3"><span className="w-2 h-2 rounded-full bg-[#0FB888] shadow-[0_0_8px_#0FB888]"/> $18.4M COP facturable</li>
-                    <li className="flex items-center gap-3 text-[#0FB888] font-bold"><span className="w-2 h-2 rounded-full bg-[#0FB888] shadow-[0_0_8px_#0FB888]"/> 100% con evidencia clínica</li>
-                  </ul>
-                </div>
-              </div>
+              <img src="/screenshots/asegurador.png" alt="Vista Asegurador en OLGA" className="w-full object-cover object-top" loading="lazy" />
             </div>
 
             <div className="lg:col-span-5 space-y-2">
@@ -160,42 +124,14 @@ const OlgaPlatform = () => {
           </div>
 
           <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 items-start">
-            {/* UI Mockup (Light theme) */}
-            <div className="lg:col-span-7 bg-[#F8FAFC] rounded-[2.5rem] p-8 border border-slate-200 shadow-xl">
-              <div className="flex gap-2 mb-8 opacity-20">
-                <div className="w-2.5 h-2.5 rounded-full bg-slate-800" /><div className="w-2.5 h-2.5 rounded-full bg-slate-800" /><div className="w-2.5 h-2.5 rounded-full bg-slate-800" />
+            {/* Screenshot real */}
+            <div className="lg:col-span-7 rounded-[2rem] overflow-hidden border border-slate-200 shadow-[0_20px_60px_rgba(10,31,26,0.12)]">
+              <div className="flex items-center gap-1.5 px-4 py-3 bg-slate-100 border-b border-slate-200">
+                <span className="w-3 h-3 rounded-full bg-red-400/70" />
+                <span className="w-3 h-3 rounded-full bg-yellow-400/70" />
+                <span className="w-3 h-3 rounded-full bg-emerald-400/70" />
               </div>
-              
-              <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm mb-6">
-                <div className="text-[#0FB888] text-[10px] font-black uppercase mb-5 tracking-widest">Pacientes post-alta en seguimiento</div>
-                <ul className="space-y-4 text-sm font-medium text-slate-700">
-                  <li className="flex items-center justify-between border-b border-slate-50 pb-4">
-                    <span className="flex items-center gap-3"><span className="w-2.5 h-2.5 rounded-full bg-[#0FB888] shadow-[0_0_8px_#0FB888]"/> María G. — Estable — Día 12</span>
-                    <span className="text-slate-400 text-xs font-light">Hace 2h</span>
-                  </li>
-                  <li className="flex items-center justify-between border-b border-slate-50 pb-4">
-                    <span className="flex items-center gap-3"><span className="w-2.5 h-2.5 rounded-full bg-yellow-400"/> Carlos R. — Vigilar — Día 5</span>
-                    <span className="text-red-500 font-bold bg-red-50 px-2 py-1 rounded-md text-xs">PA elevada</span>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span className="flex items-center gap-3 font-bold text-red-600"><span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse"/> Luis M. — Urgente — Día 3</span>
-                    <span className="text-slate-400 text-xs font-light">Equipo contactado</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                  <div className="text-indigo-500 text-[10px] font-black uppercase mb-2 tracking-widest">Reingreso 30d</div>
-                  <div className="text-4xl font-extrabold text-[#0A1F1A]" style={{ fontFamily: "'DM Sans', sans-serif" }}>6.4%</div>
-                  <div className="text-xs text-slate-400 mt-2">vs. 28.9% promedio nacional</div>
-                </div>
-                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                  <div className="text-[#0FB888] text-[10px] font-black uppercase mb-2 tracking-widest">Plan de cuidado</div>
-                  <div className="text-4xl font-extrabold text-[#0A1F1A]" style={{ fontFamily: "'DM Sans', sans-serif" }}>91%</div>
-                  <div className="text-xs text-slate-400 mt-2">servicios completados a tiempo</div>
-                </div>
-              </div>
+              <img src="/screenshots/hospital.png" alt="Vista Hospital en OLGA" className="w-full object-cover object-top" loading="lazy" />
             </div>
 
             <div className="lg:col-span-5 space-y-2">
@@ -220,32 +156,13 @@ const OlgaPlatform = () => {
           </div>
           
           <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 items-center">
-            <div className="lg:col-span-7 bg-[#112A24] rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(15,184,136,0.08)_0,transparent_50%)] pointer-events-none" />
-              
-              <div className="text-[#0FB888] text-[10px] font-black uppercase mb-6 tracking-widest relative z-10">Dashboard Operativo Central</div>
-              
-              <div className="grid grid-cols-2 gap-4 mb-6 relative z-10">
-                <div className="bg-white/5 backdrop-blur-sm p-5 rounded-2xl border border-white/5">
-                  <div className="text-teal-400 text-[10px] font-bold uppercase mb-1">En campo hoy</div>
-                  <div className="text-3xl font-extrabold text-white mb-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>24</div>
-                  <div className="text-[10px] text-white/40">profesionales activos en ruta</div>
-                </div>
-                <div className="bg-white/5 backdrop-blur-sm p-5 rounded-2xl border border-white/5">
-                  <div className="text-orange-400 text-[10px] font-bold uppercase mb-1">Visitas Programadas</div>
-                  <div className="text-3xl font-extrabold text-white mb-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>87</div>
-                  <div className="text-[10px] text-white/40">52 completadas · 35 pendientes</div>
-                </div>
+            <div className="lg:col-span-7 rounded-[2rem] overflow-hidden border border-slate-200 shadow-[0_20px_60px_rgba(10,31,26,0.12)]">
+              <div className="flex items-center gap-1.5 px-4 py-3 bg-slate-100 border-b border-slate-200">
+                <span className="w-3 h-3 rounded-full bg-red-400/70" />
+                <span className="w-3 h-3 rounded-full bg-yellow-400/70" />
+                <span className="w-3 h-3 rounded-full bg-emerald-400/70" />
               </div>
-              
-              <div className="bg-white/5 backdrop-blur-sm p-6 rounded-2xl border border-white/5 relative z-10">
-                <div className="text-white/40 text-[10px] font-black uppercase mb-4 tracking-widest">Estado en vivo del equipo</div>
-                <ul className="text-sm text-white/80 space-y-4 font-light">
-                  <li className="flex items-center gap-3"><span className="w-2.5 h-2.5 rounded-full bg-[#0FB888] shadow-[0_0_8px_#0FB888]"/> <strong className="font-medium">Sandra M.</strong> — En ruta visita 3/5</li>
-                  <li className="flex items-center gap-3"><span className="w-2.5 h-2.5 rounded-full bg-[#0FB888] shadow-[0_0_8px_#0FB888]"/> <strong className="font-medium">Jorge L.</strong> — En domicilio (GPS Verificado)</li>
-                  <li className="flex items-center gap-3"><span className="w-2.5 h-2.5 rounded-full bg-yellow-400"/> <strong className="font-medium">Diana R.</strong> — Retrasada 15 min por tráfico</li>
-                </ul>
-              </div>
+              <img src="/screenshots/proveedor.png" alt="Vista Prestador en OLGA" className="w-full object-cover object-top" loading="lazy" />
             </div>
 
             <div className="lg:col-span-5 space-y-2">
@@ -272,53 +189,13 @@ const OlgaPlatform = () => {
           </div>
 
           <div className="grid lg:grid-cols-12 gap-12 xl:gap-16 items-center">
-            <div className="lg:col-span-7 order-2 lg:order-1">
-              {/* Web Portal Mockup for Patient */}
-              <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
-                <div className="flex justify-between items-center mb-8 border-b border-slate-100 pb-4">
-                  <div>
-                    <h4 className="text-[#0A1F1A] text-xl font-bold" style={{ fontFamily: "'DM Sans', sans-serif" }}>Portal de Familia</h4>
-                    <p className="text-slate-400 text-sm">Paciente: Carlos Ruiz</p>
-                  </div>
-                  <div className="bg-[#0FB888]/10 text-[#0FB888] px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[#0FB888] animate-pulse" /> Monitoreo Activo
-                  </div>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4 mb-6">
-                  <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
-                    <div className="text-slate-400 text-[10px] font-black uppercase mb-3 tracking-widest">Estado Actual</div>
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-[#0FB888]/20 flex items-center justify-center">
-                        <div className="w-4 h-4 rounded-full bg-[#0FB888] shadow-[0_0_12px_#0FB888]" />
-                      </div>
-                      <div>
-                        <div className="text-[#0A1F1A] font-bold">Estable</div>
-                        <div className="text-slate-500 text-xs">Signos vitales normales</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-orange-50 rounded-2xl p-6 border border-orange-100">
-                    <div className="text-orange-500 text-[10px] font-black uppercase mb-3 tracking-widest">Próxima Visita</div>
-                    <div className="text-[#0A1F1A] font-bold">Terapia Física</div>
-                    <div className="text-orange-700/70 text-sm mt-1">Hoy — 2:00 PM (En 3 hrs)</div>
-                  </div>
-                </div>
-
-                <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 mb-6">
-                  <div className="text-slate-400 text-[10px] font-black uppercase mb-4 tracking-widest">Historial de Cuidados</div>
-                  <ul className="text-sm space-y-3 font-medium text-slate-600">
-                    <li className="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-slate-100">
-                      <span className="flex items-center gap-3"><Ico id="i-check" className="w-4 h-4 text-[#0FB888]"/> Visita de Enfermería</span>
-                      <span className="text-xs text-slate-400">Ayer, 9:30 AM</span>
-                    </li>
-                    <li className="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-slate-100">
-                      <span className="flex items-center gap-3"><Ico id="i-check" className="w-4 h-4 text-[#0FB888]"/> Entrega de medicamentos</span>
-                      <span className="text-xs text-slate-400">Lun, 4:15 PM</span>
-                    </li>
-                  </ul>
-                </div>
+            <div className="lg:col-span-7 order-2 lg:order-1 rounded-[2rem] overflow-hidden border border-slate-200 shadow-[0_20px_60px_rgba(10,31,26,0.12)]">
+              <div className="flex items-center gap-1.5 px-4 py-3 bg-slate-100 border-b border-slate-200">
+                <span className="w-3 h-3 rounded-full bg-red-400/70" />
+                <span className="w-3 h-3 rounded-full bg-yellow-400/70" />
+                <span className="w-3 h-3 rounded-full bg-emerald-400/70" />
               </div>
+              <img src="/screenshots/paciente.png" alt="Vista Paciente en OLGA" className="w-full object-cover object-top" loading="lazy" />
             </div>
 
             <div className="lg:col-span-5 space-y-2 order-1 lg:order-2">
