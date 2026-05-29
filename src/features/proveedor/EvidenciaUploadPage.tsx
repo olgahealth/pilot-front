@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import type SignatureCanvasType from "react-signature-canvas";
-import {
-  MapPin, Camera, PenLine, FileText,
-  CheckCircle, ArrowLeft, RotateCcw, Loader2, Clock,
-} from "lucide-react";
+import { PenLine, FileText, CheckCircle, ArrowLeft, RotateCcw, Loader2 } from "lucide-react";
+import { GPSCapture }      from "./components/GPSCapture";
+import { AttendanceTime }  from "./components/AttendanceTime";
+import { PhotoUpload }     from "./components/PhotoUpload";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const SignatureCanvas = dynamic(() => import("react-signature-canvas"), { ssr: false }) as any;
@@ -20,98 +20,51 @@ interface VisitaInfo {
   estado: string;
 }
 
+function calcMinutos(l: string, s: string) {
+  const [lh, lm] = l.split(":").map(Number);
+  const [sh, sm] = s.split(":").map(Number);
+  return Math.max(0, (sh * 60 + sm) - (lh * 60 + lm));
+}
+
 export default function EvidenciaUploadPage({ timelineId }: { timelineId: number }) {
-  const router = useRouter();
-  const sigRef = useRef<SignatureCanvasType>(null);
+  const router  = useRouter();
+  const sigRef  = useRef<SignatureCanvasType>(null);
 
-  const [info, setInfo] = useState<VisitaInfo | null>(null);
+  const [info, setInfo]           = useState<VisitaInfo | null>(null);
   const [loadingInfo, setLoadingInfo] = useState(true);
-  const [yaSubida, setYaSubida] = useState(false);
+  const [yaSubida, setYaSubida]   = useState(false);
+  const [success, setSuccess]     = useState(false);
 
-  const [nota, setNota] = useState("");
-  const [fotoBase64, setFotoBase64] = useState<string>("");
-  const [fotoPreview, setFotoPreview] = useState<string>("");
-  const [gps, setGps] = useState<{ lat: number; lng: number } | null>(null);
-  const [gpsLoading, setGpsLoading] = useState(false);
-  const [gpsError, setGpsError] = useState<string | null>(null);
+  // Form state
+  const [nota, setNota]           = useState("");
+  const [fotoBase64, setFotoBase64] = useState("");
+  const [gps, setGps]             = useState<{ lat: number; lng: number } | null>(null);
+  const [horas, setHoras]         = useState<{ llegada: string; salida: string }>({ llegada: "", salida: "" });
   const [firmaVacia, setFirmaVacia] = useState(true);
-  const [horaLlegada, setHoraLlegada] = useState("");
-  const [horaSalida, setHoraSalida] = useState("");
-
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
-    fetch(`${API}/api/v1/proveedor/evidencia/${timelineId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(`${API}/api/v1/proveedor/evidencia/${timelineId}`, { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
       .then((d) => {
         if (d) {
           setInfo(d);
-          if (d.estado === "pendiente_revision" || d.estado === "verificado") {
-            setYaSubida(true);
-          }
+          if (d.estado === "pendiente_revision" || d.estado === "verificado") setYaSubida(true);
         }
       })
       .catch(console.error)
       .finally(() => setLoadingInfo(false));
   }, [timelineId]);
 
-  function calcMinutos(llegada: string, salida: string): number {
-    const [lh, lm] = llegada.split(":").map(Number);
-    const [sh, sm] = salida.split(":").map(Number);
-    return Math.max(0, (sh * 60 + sm) - (lh * 60 + lm));
-  }
-
-  function captureGps() {
-    if (!navigator.geolocation) {
-      setGpsError("GPS no disponible en este dispositivo");
-      return;
-    }
-    setGpsLoading(true);
-    setGpsError(null);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setGps({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setGpsLoading(false);
-      },
-      () => {
-        setGpsError("No se pudo obtener la ubicación. Verificá los permisos.");
-        setGpsLoading(false);
-      },
-      { timeout: 10000, enableHighAccuracy: true },
-    );
-  }
-
-  function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const result = ev.target?.result as string;
-      setFotoBase64(result);
-      setFotoPreview(result);
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function clearFirma() {
-    sigRef.current?.clear();
-    setFirmaVacia(true);
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!nota.trim()) { setSubmitError("La nota clínica es obligatoria"); return; }
-    if (!gps) { setSubmitError("Capturá la ubicación GPS antes de enviar"); return; }
-    if (firmaVacia || sigRef.current?.isEmpty()) { setSubmitError("La firma digital es obligatoria"); return; }
+    if (!nota.trim())                                   { setSubmitError("La nota clínica es obligatoria"); return; }
+    if (!gps)                                           { setSubmitError("Capturá la ubicación GPS antes de enviar"); return; }
+    if (firmaVacia || sigRef.current?.isEmpty())        { setSubmitError("La firma digital es obligatoria"); return; }
 
-    setSubmitting(true);
-    setSubmitError(null);
-
+    setSubmitting(true); setSubmitError(null);
     try {
       const firmaBase64 = sigRef.current?.toDataURL("image/png") ?? "";
       const token = localStorage.getItem("auth_token");
@@ -122,84 +75,47 @@ export default function EvidenciaUploadPage({ timelineId }: { timelineId: number
           notaClinica: nota,
           fotoBase64: fotoBase64 || undefined,
           firmaBase64,
-          gpsLat: gps.lat,
-          gpsLng: gps.lng,
-          horaLlegada: horaLlegada || undefined,
-          horaSalida: horaSalida || undefined,
-          tiempoAtencion: (horaLlegada && horaSalida) ? calcMinutos(horaLlegada, horaSalida) : undefined,
+          gpsLat: gps.lat, gpsLng: gps.lng,
+          horaLlegada: horas.llegada || undefined,
+          horaSalida: horas.salida || undefined,
+          tiempoAtencion: (horas.llegada && horas.salida) ? calcMinutos(horas.llegada, horas.salida) : undefined,
         }),
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || "Error al enviar evidencia");
-      }
+      if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.message || "Error al enviar evidencia"); }
       setSuccess(true);
-    } catch (err: any) {
-      setSubmitError(err.message);
-    } finally {
-      setSubmitting(false);
-    }
+    } catch (err: any) { setSubmitError(err.message); }
+    finally { setSubmitting(false); }
   }
 
-  if (loadingInfo) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
-      </div>
-    );
-  }
+  if (loadingInfo) return <div className="flex items-center justify-center min-h-screen"><Loader2 className="w-8 h-8 animate-spin text-emerald-600" /></div>;
 
-  if (success) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-6 text-center">
-        <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center">
-          <CheckCircle className="w-10 h-10 text-emerald-600" />
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900">Evidencia enviada</h2>
-          <p className="text-sm text-slate-500 mt-2">La EPS recibirá la evidencia para su revisión.</p>
-        </div>
-        <button
-          onClick={() => router.push("/proveedor/visitas")}
-          className="px-8 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-colors"
-        >
-          Volver a mis visitas
-        </button>
-      </div>
-    );
-  }
+  if (success) return (
+    <div className="flex flex-col items-center justify-center min-h-screen gap-6 p-6 text-center">
+      <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center"><CheckCircle className="w-10 h-10 text-emerald-600" /></div>
+      <div><h2 className="text-2xl font-bold text-slate-900">Evidencia enviada</h2><p className="text-sm text-slate-500 mt-2">La EPS recibirá la evidencia para su revisión.</p></div>
+      <button onClick={() => router.push("/proveedor/visitas")} className="px-8 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-colors">Volver a mis visitas</button>
+    </div>
+  );
 
-  if (yaSubida) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-6 text-center">
-        <CheckCircle className="w-12 h-12 text-emerald-500" />
-        <h2 className="text-xl font-bold text-slate-900">Evidencia ya enviada</h2>
-        <p className="text-sm text-slate-500">Esta visita ya tiene evidencia cargada y está en proceso de revisión.</p>
-        <button onClick={() => router.push("/proveedor/visitas")}
-          className="px-6 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors">
-          Volver a mis visitas
-        </button>
-      </div>
-    );
-  }
+  if (yaSubida) return (
+    <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-6 text-center">
+      <CheckCircle className="w-12 h-12 text-emerald-500" />
+      <h2 className="text-xl font-bold text-slate-900">Evidencia ya enviada</h2>
+      <p className="text-sm text-slate-500">Esta visita ya tiene evidencia cargada y está en proceso de revisión.</p>
+      <button onClick={() => router.push("/proveedor/visitas")} className="px-6 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors">Volver a mis visitas</button>
+    </div>
+  );
 
   return (
     <div className="max-w-xl mx-auto p-6 pb-24 space-y-6">
-      {/* Header */}
       <div className="flex items-center gap-3">
-        <button onClick={() => router.back()}
-          className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+        <button onClick={() => router.back()} className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"><ArrowLeft className="w-5 h-5" /></button>
         <div>
           <h1 className="text-xl font-bold text-slate-900">Cargar evidencia</h1>
-          {info && (
-            <p className="text-sm text-slate-500">{info.paciente.nombre} · {info.visita.fecha}</p>
-          )}
+          {info && <p className="text-sm text-slate-500">{info.paciente.nombre} · {info.visita.fecha}</p>}
         </div>
       </div>
 
-      {/* Info visita */}
       {info && (
         <div className="bg-slate-50 rounded-2xl border border-slate-200 p-4 text-sm space-y-1">
           <p className="font-semibold text-slate-800">{info.visita.servicio}</p>
@@ -210,126 +126,38 @@ export default function EvidenciaUploadPage({ timelineId }: { timelineId: number
 
       <form onSubmit={handleSubmit} className="space-y-5">
 
-        {/* GPS */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <MapPin className="w-4 h-4 text-emerald-600" />
-            <h3 className="text-sm font-bold text-slate-800">Ubicación GPS</h3>
-          </div>
-          {gps ? (
-            <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 rounded-xl px-3 py-2.5 font-medium">
-              <CheckCircle className="w-4 h-4" />
-              Ubicación capturada: {gps.lat.toFixed(5)}, {gps.lng.toFixed(5)}
-            </div>
-          ) : (
-            <button type="button" onClick={captureGps} disabled={gpsLoading}
-              className="w-full py-2.5 text-sm font-bold text-white bg-emerald-600 rounded-xl hover:bg-emerald-700 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors">
-              {gpsLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
-              {gpsLoading ? "Obteniendo ubicación..." : "Capturar mi ubicación"}
-            </button>
-          )}
-          {gpsError && <p className="text-xs text-rose-600 mt-2">{gpsError}</p>}
-        </div>
+        <GPSCapture onCapture={(lat, lng) => setGps({ lat, lng })} />
 
         {/* Nota clínica */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <FileText className="w-4 h-4 text-emerald-600" />
-            <h3 className="text-sm font-bold text-slate-800">Nota clínica <span className="text-rose-500">*</span></h3>
-          </div>
-          <textarea
-            required value={nota}
-            onChange={(e) => setNota(e.target.value)}
-            rows={4}
+          <div className="flex items-center gap-2 mb-3"><FileText className="w-4 h-4 text-emerald-600" /><h3 className="text-sm font-bold text-slate-800">Nota clínica <span className="text-rose-500">*</span></h3></div>
+          <textarea required value={nota} onChange={(e) => setNota(e.target.value)} rows={4}
             placeholder="Describe el estado del paciente, procedimientos realizados, observaciones relevantes..."
-            className="w-full text-sm border border-slate-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all"
-          />
+            className="w-full text-sm border border-slate-200 rounded-xl p-3 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all" />
         </div>
 
-        {/* Horas de atención */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <Clock className="w-4 h-4 text-emerald-600" />
-            <h3 className="text-sm font-bold text-slate-800">Tiempo de atención</h3>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1">Hora de llegada</label>
-              <input
-                type="time"
-                value={horaLlegada}
-                onChange={(e) => setHoraLlegada(e.target.value)}
-                className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1">Hora de salida</label>
-              <input
-                type="time"
-                value={horaSalida}
-                onChange={(e) => setHoraSalida(e.target.value)}
-                className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400"
-              />
-            </div>
-          </div>
-          {horaLlegada && horaSalida && calcMinutos(horaLlegada, horaSalida) > 0 && (
-            <div className="mt-3 flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 rounded-xl px-3 py-2 font-semibold">
-              <Clock className="w-4 h-4" />
-              Tiempo total: {calcMinutos(horaLlegada, horaSalida)} minutos
-            </div>
-          )}
-        </div>
+        <AttendanceTime onChange={(llegada, salida) => setHoras({ llegada, salida })} />
 
-        {/* Foto */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <Camera className="w-4 h-4 text-emerald-600" />
-            <h3 className="text-sm font-bold text-slate-800">Foto de evidencia</h3>
-            <span className="text-xs text-slate-400">(opcional)</span>
-          </div>
-          {fotoPreview ? (
-            <div className="space-y-2">
-              <img src={fotoPreview} alt="Evidencia" className="w-full rounded-xl object-cover max-h-48" />
-              <button type="button" onClick={() => { setFotoBase64(""); setFotoPreview(""); }}
-                className="text-xs text-rose-500 font-semibold hover:text-rose-600">
-                Eliminar foto
-              </button>
-            </div>
-          ) : (
-            <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50 transition-all">
-              <Camera className="w-7 h-7 text-slate-300 mb-1" />
-              <span className="text-xs text-slate-400 font-medium">Tomar foto o seleccionar</span>
-              <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFoto} />
-            </label>
-          )}
-        </div>
+        <PhotoUpload onChange={setFotoBase64} />
 
-        {/* Firma digital */}
+        {/* Firma */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <PenLine className="w-4 h-4 text-emerald-600" />
-              <h3 className="text-sm font-bold text-slate-800">Firma digital <span className="text-rose-500">*</span></h3>
-            </div>
-            <button type="button" onClick={clearFirma}
+            <div className="flex items-center gap-2"><PenLine className="w-4 h-4 text-emerald-600" /><h3 className="text-sm font-bold text-slate-800">Firma digital <span className="text-rose-500">*</span></h3></div>
+            <button type="button" onClick={() => { sigRef.current?.clear(); setFirmaVacia(true); }}
               className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 transition-colors">
               <RotateCcw className="w-3.5 h-3.5" /> Limpiar
             </button>
           </div>
           <div className="border-2 border-dashed border-slate-200 rounded-xl overflow-hidden bg-slate-50">
-            <SignatureCanvas
-              ref={sigRef}
-              penColor="#0f172a"
+            <SignatureCanvas ref={sigRef} penColor="#0f172a"
               canvasProps={{ className: "w-full h-36 touch-none" }}
-              onBegin={() => setFirmaVacia(false)}
-            />
+              onBegin={() => setFirmaVacia(false)} />
           </div>
           <p className="text-xs text-slate-400 mt-2 text-center">Firmá con el dedo o el mouse</p>
         </div>
 
-        {submitError && (
-          <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">{submitError}</p>
-        )}
+        {submitError && <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">{submitError}</p>}
 
         <button type="submit" disabled={submitting}
           className="w-full py-4 bg-emerald-600 text-white font-bold rounded-2xl hover:bg-emerald-700 disabled:opacity-50 flex items-center justify-center gap-2 text-base transition-colors shadow-lg shadow-emerald-600/20">
