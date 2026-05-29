@@ -1,7 +1,21 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Hook: dispara cuando el elemento entra en viewport
+function useInView(threshold = 0.3) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } }, { threshold });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, inView };
+}
 
 const HERO_METRICS = [
   { id: 'metric-1', value: 'USD 14.5B', label: 'en cuidado domiciliario pagados sin verificación electrónica en NY en un año' },
@@ -9,6 +23,57 @@ const HERO_METRICS = [
   { id: 'metric-3', value: '$2,500',    label: 'USD costo promedio por evento prevenible' },
   { id: 'metric-4', value: '0',         label: 'plataformas que integren todo el ecosistema en LATAM' },
 ];
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (i: number) => ({
+    opacity: 1, y: 0,
+    transition: { delay: i * 0.12, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
+function MetricsGrid() {
+  const { ref, inView } = useInView(0.2);
+
+  return (
+    <div className="flex flex-col gap-5 relative" ref={ref}>
+      <motion.p
+        className="text-xs font-bold uppercase tracking-[0.15em] text-slate-400"
+        initial={{ opacity: 0 }}
+        animate={inView ? { opacity: 1 } : {}}
+        transition={{ duration: 0.4 }}
+      >
+        El costo oculto de la atención desconectada
+      </motion.p>
+
+      <div className="grid grid-cols-2 gap-[18px]">
+        {HERO_METRICS.map((m, i) => (
+          <motion.div
+            key={m.id}
+            custom={i}
+            variants={cardVariants}
+            initial="hidden"
+            animate={inView ? "visible" : "hidden"}
+            whileHover={{ scale: 1.04, y: -6, boxShadow: '0 32px 80px rgba(15,184,136,0.22)' }}
+            transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+            className="flex flex-col gap-2 rounded-[28px] p-8 border border-[#0FB888]/20 bg-[#cffff0]/70 backdrop-blur-sm cursor-default"
+            style={{ boxShadow: '0 24px 70px rgba(15,184,136,0.13)' }}
+          >
+            <span
+              className="text-4xl md:text-5xl font-extrabold text-[#0A1F1A] leading-none"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              {m.value}
+            </span>
+            <span className="text-[11px] uppercase tracking-wider text-slate-500 leading-snug">
+              {m.label}
+            </span>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const OlgaHero: React.FC = () => {
   const [showBubble, setShowBubble] = useState(false);
@@ -86,77 +151,15 @@ const OlgaHero: React.FC = () => {
             </div>
 
             {/* ── DERECHA ── */}
-            <div className="flex flex-col gap-5 relative">
+            <MetricsGrid />
 
-              {/* Label */}
-              <p className="text-xs font-bold uppercase tracking-[0.15em] text-slate-400">
-                El costo oculto de la atención desconectada
-              </p>
-
-              {/* 4 metric cards */}
-              <div className="grid grid-cols-2 gap-[18px]">
-                {HERO_METRICS.map((m) => (
-                  <div
-                    key={m.id}
-                    className="flex flex-col gap-2 rounded-[28px] p-8 border border-[#0FB888]/18 bg-[#cffff0]/70 backdrop-blur-sm"
-                    style={{ boxShadow: '0 24px 70px rgba(15,184,136,0.13)' }}
-                  >
-                    <span
-                      className="text-4xl md:text-5xl font-extrabold text-[#0A1F1A] leading-none"
-                      style={{ fontFamily: "'DM Sans', sans-serif" }}
-                    >
-                      {m.value}
-                    </span>
-                    <span className="text-[11px] uppercase tracking-wider text-slate-500 leading-snug">
-                      {m.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Bohu — guía de visibilidad clínica (comentado temporalmente)
-              <div className="flex justify-end items-end gap-4 mt-2">
-                <AnimatePresence>
-                  {showBubble && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 6, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 6, scale: 0.95 }}
-                      transition={{ duration: 0.2, ease: 'easeOut' }}
-                      className="relative mb-2"
-                    >
-                      <div className="bg-white border border-[#0FB888]/30 rounded-2xl shadow-xl px-5 py-3 max-w-[220px]">
-                        <p className="text-sm font-semibold text-[#0A1F1A] leading-snug">
-                          "Hago visible el cuidado fuera del hospital."
-                        </p>
-                        <p className="text-[10px] text-slate-400 mt-1 font-medium">— Bohu, guía clínica</p>
-                      </div>
-                      <div
-                        className="absolute -bottom-2 right-6 w-4 h-4 bg-white border-b border-r border-[#0FB888]/30 rotate-45"
-                        style={{ boxShadow: '2px 2px 4px rgba(15,184,136,0.08)' }}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-                <button
-                  onClick={() => setShowBubble((v) => !v)}
-                  onMouseEnter={() => setShowBubble(true)}
-                  onMouseLeave={() => setShowBubble(false)}
-                  className="cursor-pointer focus:outline-none flex-shrink-0"
-                  aria-label="Bohu — guía de visibilidad clínica de OLGA"
-                  title="Bohu — guía de visibilidad clínica"
-                >
-                  <img
-                    src="/buhoolga-Photoroom.png"
-                    alt="Bohu, guía de visibilidad clínica de OLGA"
-                    className="w-32 h-32 object-contain drop-shadow-md"
-                    style={{ animation: 'float 3s ease-in-out infinite' }}
-                  />
-                </button>
-              </div>
-              */}
-
+            {/* Bohu — guía de visibilidad clínica (comentado temporalmente)
+            <div className="flex justify-end items-end gap-4 mt-2">
+              <button onClick={() => setShowBubble((v) => !v)} onMouseEnter={() => setShowBubble(true)} onMouseLeave={() => setShowBubble(false)} className="cursor-pointer focus:outline-none flex-shrink-0">
+                <img src="/buhoolga-Photoroom.png" alt="Bohu" className="w-32 h-32 object-contain drop-shadow-md" style={{ animation: 'float 3s ease-in-out infinite' }} />
+              </button>
             </div>
+            */}
 
           </div>
         </div>
