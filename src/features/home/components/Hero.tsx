@@ -42,7 +42,7 @@ const OlgaHero: React.FC = () => {
       >
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(135deg, #ffffff 0%, #cffff0 100%)" }}
+          style={{ background: "linear-gradient(135deg, #ffffff 0%, #ffffff 65%, #cffff0 100%)" }}
         />
       </div>
 
