@@ -19,13 +19,13 @@ const Header = () => {
   }, []);
 
   const navLinks = [
-    { label: 'Inicio', href: '#Inicio' },
-    { label: 'Problema', href: '#problem' },
-    { label: 'Solución', href: '#solution' },
-    { label: 'Plataforma', href: '#platform' },
+    { label: 'Inicio',      href: '#inicio' },
+    { label: 'Problema',    href: '#problem' },
+    { label: 'Solución',    href: '#solucion' },
+    { label: 'Plataforma',  href: '#platform' },
     { label: 'Capacidades', href: '#features' },
-    { label: 'Fase 2', href: '#future' },
-    { label: 'Contacto', href: '#contact' },
+    { label: 'Fase 2',      href: '#fase2' },
+    { label: 'Contacto',    href: '#contact' },
   ];
 
   return (

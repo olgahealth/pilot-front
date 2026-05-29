@@ -33,7 +33,7 @@ const HERO_METRICS: Metric[] = [
 
 const OlgaHero: React.FC = () => {
   return (
-    <div id="Inicio" className="relative min-h-[100svh] bg-white overflow-hidden flex items-center">
+    <div id="inicio" className="relative min-h-[100svh] bg-white overflow-hidden flex items-center">
       
       {/* BACKGROUND IMAGE WITH OVERLAY */}
       <div 

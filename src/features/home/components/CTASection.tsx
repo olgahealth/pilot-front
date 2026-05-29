@@ -66,7 +66,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative bg-[#0A1F1A] text-white overflow-hidden border-t border-white/10">
+    <footer id="contact" className="relative bg-[#0A1F1A] text-white overflow-hidden border-t border-white/10">
       
       {/* Patrón de fondo sutil (Matriz de puntos) */}
       <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
