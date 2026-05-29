@@ -48,7 +48,7 @@ const Header = () => {
       {/* LOGO - FUERZA BRUTA CON INLINE STYLES */}
       <div 
         className={`transition-colors duration-300 z-[110] ${
-          isScrolled || isMenuOpen ? "text-[#0A1F1A]" : "text-white"
+          isMenuOpen ? "text-[#0A1F1A]" : "text-[#0A1F1A]"
         }`}
         style={{
           fontFamily: "'DM Sans', sans-serif",
