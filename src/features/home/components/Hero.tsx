@@ -40,12 +40,10 @@ const OlgaHero: React.FC = () => {
         aria-hidden="true"
         className="absolute inset-0 z-0"
       >
-        <div 
-          className="absolute inset-0 bg-cover bg-center transform scale-105 transition-transform duration-[20s] ease-out"
-          style={{ backgroundImage: "url('/hero.png')" }}
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(135deg, #ffffff 0%, #cffff0 100%)" }}
         />
-        {/* Overlay Light */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/55 via-white/55 to-white/20 backdrop-blur-[2px]" />
       </div>
 
       {/* HERO SECTION CONTENT */}
