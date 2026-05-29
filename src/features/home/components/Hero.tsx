@@ -56,11 +56,11 @@ function MetricsGrid() {
             animate={inView ? "visible" : "hidden"}
             whileHover={{ scale: 1.04, y: -6, boxShadow: '0 32px 80px rgba(15,184,136,0.22)' }}
             transition={{ type: 'spring', stiffness: 300, damping: 22 }}
-            className="flex flex-col gap-2 rounded-[28px] p-8 border border-[#0FB888]/20 bg-[#cffff0]/70 backdrop-blur-sm cursor-default"
+            className="flex flex-col gap-2 rounded-[20px] md:rounded-[28px] p-5 md:p-8 border border-[#0FB888]/20 bg-[#cffff0]/70 backdrop-blur-sm cursor-default"
             style={{ boxShadow: '0 24px 70px rgba(15,184,136,0.13)' }}
           >
             <span
-              className="text-4xl md:text-5xl font-extrabold text-[#0A1F1A] leading-none"
+              className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#0A1F1A] leading-none"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {m.value}
@@ -97,12 +97,9 @@ const OlgaHero: React.FC = () => {
         />
       </div>
 
-      <section className="relative z-10 w-full pt-24 pb-20 px-6">
+      <section className="relative z-10 w-full pt-20 md:pt-24 pb-14 md:pb-20 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
-          <div
-            className="grid grid-cols-1 lg:grid-cols-2 items-center gap-16 lg:gap-20"
-            style={{ gridTemplateColumns: '1fr 0.9fr' }}
-          >
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_0.9fr] items-center gap-10 lg:gap-20">
 
             {/* ── IZQUIERDA ── */}
             <div className="flex flex-col gap-6 max-w-[640px]">
