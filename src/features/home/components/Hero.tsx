@@ -49,10 +49,32 @@ const OlgaHero: React.FC = () => {
       {/* HERO SECTION CONTENT */}
       <section className="relative z-10 w-full pt-32 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
-            {/* LEFT SIDE: MINIMALIST BRANDING */}
-            <div className="lg:col-span-7 text-left flex flex-col justify-center">
+            {/* NAV VERTICAL IZQUIERDA */}
+            <div className="hidden lg:flex lg:col-span-1 flex-col items-center justify-center gap-6 h-full">
+              {[
+                { label: 'Inicio',       href: '#Inicio' },
+                { label: 'Problema',     href: '#problem' },
+                { label: 'Solución',     href: '#solution' },
+                { label: 'Plataforma',   href: '#platform' },
+                { label: 'Capacidades',  href: '#features' },
+                { label: 'Fase 2',       href: '#future' },
+                { label: 'Contacto',     href: '#contact' },
+              ].map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                  className="text-[11px] font-semibold tracking-[0.15em] uppercase text-slate-400 hover:text-[#0FB888] transition-colors duration-200"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+
+            {/* CENTER: BRANDING */}
+            <div className="lg:col-span-6 text-left flex flex-col justify-center">
               
               {/* Giant "olga" Heading matching the logo style */}
 
@@ -76,7 +98,7 @@ const OlgaHero: React.FC = () => {
             </div>
 
             {/* RIGHT SIDE: STATS */}
-            <div className="lg:col-span-5 relative mt-8 lg:mt-0">
+            <div className="lg:col-span-5 relative mt-8 lg:mt-0 lg:col-start-8">
               {/* Resplandor de fondo ajustado para modo claro */}
               <div className="absolute -inset-1 bg-gradient-to-r from-[#0FB888]/20 to-[#2BB38E]/20 rounded-[34px] blur-xl opacity-70"></div>
               

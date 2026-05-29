@@ -63,7 +63,7 @@ const Header = () => {
       </div>
 
       {/* NAVEGACIÓN CENTRAL */}
-      <div className="absolute left-1/2 -translate-x-1/2 hidden xl:block">
+      <div className="absolute left-1/2 -translate-x-1/2 hidden xl:block opacity-0 pointer-events-none">
         <nav className="flex items-center gap-1 bg-white border border-slate-200 shadow-[0_4px_20px_rgba(0,0,0,0.08)] rounded-full px-2 py-1.5">
           {navLinks.map((link) => (
             <a
